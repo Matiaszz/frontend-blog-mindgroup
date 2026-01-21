@@ -13,14 +13,20 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 
 [data-theme="dark"] {
-  --bg: #3f3f3f; /* amarelo 600 */
+  --bg: #0B0E13;
   --text: #ffffff;
+  --primary: #07B6D5;
+  --muted: #2b303b;
+
 }
 
 [data-theme="light"] {
-  --bg: #dddddd; /* amarelo 600 */
+  --bg: #dddddd;
   --text: #000000;
+  --primary: #07B6D5;
+  --muted: #2b303b;
 }
