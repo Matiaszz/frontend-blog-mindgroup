@@ -15,3 +15,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme="dark"] {
+  --bg: #3f3f3f; /* amarelo 600 */
+  --text: #ffffff;
+}
+
+[data-theme="light"] {
+  --bg: #dddddd; /* amarelo 600 */
+  --text: #000000;
+}
