@@ -1,13 +1,25 @@
-import { Navbar } from "./components/Navbar";
-import { useTheme } from "./hooks/useTheme";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Login } from "./pages/Login";
+import { DefaultLayout } from "./layouts/DefaultLayout";
+import { NoAuthLinksLayout } from "./layouts/NoAuthLinksLayout";
+import { Register } from "./pages/Register";
+import { Articles } from "./pages/Articles";
 
 function App() {
-  const {classes} = useTheme();
   return (
-    <div className={`min-h-screen ${classes.bgClass}`}>
-      <Navbar/>
-      <h1 className='text-red-600'>Hello World!</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<DefaultLayout/>}>
+          <Route path="/" element={<Home />} />
+          <Route path="/artigos" element={<Articles/>} />
+        </Route>
+        <Route element={<NoAuthLinksLayout/>}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register/>}/>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
