@@ -2,10 +2,8 @@ import type React from "react";
 import { RegisterInfo } from "../components/RegisterInfo";
 import { useState } from "react";
 import { register } from "../services/authService";
-import type { RegisterDTO } from "../@types/dtos";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
-import { Button } from "../components/Button";
 import { NavLink } from "../components/ui/NavLink";
 import { FormInput } from "../components/ui/FormInput";
 import { Users } from "lucide-react";
@@ -32,11 +30,12 @@ export function Register() {
             });
 
             if (res.errors){
+                alert(res.errors)
                 console.error(res);
                 return;
             }
-
-            navigate('/dashboard');
+            alert('Registrado com sucesso!')
+            navigate('/login');
 
         } finally {
             setLoading(false);

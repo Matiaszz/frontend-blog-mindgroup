@@ -42,12 +42,22 @@ export async function register(
         confirmPassword: "Confirmar senha",
         name: "Nome"
     };
-
+    
     const errors = (Object.keys(requiredFields) as Array<keyof typeof values>)
         .filter((key) => !values[key]?.trim())
         .map((key) => `${requiredFields[key]} é obrigatório.`);
 
     if (errors.length > 0) {
+        return { data: null, errors };
+    }
+
+    if (name.trim().length < 2){
+        errors.push('O nome deve ter pelo menos 2 caracteres.');
+        return { data: null, errors };
+    }
+
+    if (password.trim() !== confirmPassword.trim()){
+        errors.push('As senhas devem ser iguais.');
         return { data: null, errors };
     }
     
@@ -57,8 +67,15 @@ export async function register(
         body: form,
     });
 
-    if (response.statusCode !== 201){
-        errors.push('Um erro ocorreu.');
+    if (response.statusCode === 400){
+        errors.push('Um erro ocorreu, revise as informações de registro e tente novamente.');
+    }
+
+    if (response.statusCode === 409){
+        errors.push('Email já cadastrado.');
+    }
+
+    if (errors.length > 0){
         return {data: null, errors}
     }
 
