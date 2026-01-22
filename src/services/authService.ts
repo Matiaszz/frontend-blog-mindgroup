@@ -1,5 +1,5 @@
 
-import type { HttpResponse, LoginDTO, RegisterDTO, ServiceResult, User } from "../@types/dtos";
+import type { LoginDTO, RegisterDTO, ServiceResult, User } from "../@types/dtos";
 import { fetchApi } from "./api";
 
 
@@ -14,13 +14,18 @@ export async function login(dto: LoginDTO): Promise<ServiceResult<User>> {
     return { data: null, errors };
   }
 
-  await logout();
 
-  const response = await fetchApi<User>({
+  const response = await fetchApi<null>({
     endpoint: "/auth/login",
     method: "POST",
     body: dto,
   });
+
+  if (response.statusCode === 404) errors.push('Usuário não encontrado.');
+
+  if (errors.length > 0) {
+    return { data: null, errors };
+  }
 
   return {
     data: response.body,
