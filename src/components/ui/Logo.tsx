@@ -1,9 +1,20 @@
 import { useTheme } from "../../hooks/useTheme";
 
+type LogoProps = {
+  size: number;
+  alwaysWhite: boolean;
+};
 
+export function Logo({ size, alwaysWhite: invertTextColor = false }: LogoProps) {
+  const { classes } = useTheme();
+  const logo = "<M/>";
 
-export function Logo(){
-    const {classes} = useTheme();
-    const logo = '<M/>';
-    return <h1 className={`font-['Irish_Grover'] text-4xl ${classes.textClass} font-bold`}>{logo}</h1>
+  return (
+    <h1
+      style={{ fontSize: `${size}px` }}
+      className={`font-['Irish_Grover'] ${!invertTextColor ? classes.textClass : 'text-white'} font-bold`}
+    >
+      {logo}
+    </h1>
+  );
 }

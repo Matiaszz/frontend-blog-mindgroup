@@ -15,7 +15,7 @@ export function Navbar({showAuthLinks = true}: NavbarProps){
     return (
         <nav className={`fixed flex justify-between items-center p-3 min-w-full border-b ${classes.borderClass} ${classes.bgClass}`}>
             <ul className="flex items-center justify-center">
-                <Logo/>
+                <Logo alwaysWhite={false} size={36}/>
             </ul>
             <ul className={`flex items-center justify-center gap-2.5 ${classes.textClass}`}>
                 <NavLink to="/">Home</NavLink>

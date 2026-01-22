@@ -13,7 +13,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 [data-theme="dark"] {
@@ -21,6 +24,9 @@
   --text: #ffffff;
   --primary: #07B6D5;
   --muted: #2b303b;
+  --secondary: #14181F;
+  --border: #272C35;
+  --muted-text: #9DA6AF;
 
 }
 
@@ -29,4 +35,7 @@
   --text: #000000;
   --primary: #07B6D5;
   --muted: #2b303b;
+  --secondary: #14181F;
+  --border: #272C35;
+  --muted-text: #9DA6AF;
 }

@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import { useTheme } from "../hooks/useTheme";
 
 export function NoAuthLinksLayout() {
@@ -10,6 +11,7 @@ export function NoAuthLinksLayout() {
         <main className={`w-screen min-h-screen pt-18 ${classes.borderClass} ${classes.bgClass} ${classes.textClass}`}>
             <Outlet />
         </main>
+        <Footer/>
     </>
   );
 }
