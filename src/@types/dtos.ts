@@ -18,15 +18,12 @@ export type RegisterDTO = {
 export type LoginDTO = Pick<RegisterDTO, "email" | "password">
 
 export type User = {
-    user: {
-        id: string;
-        email: string;
-        name: string;
-        profilePictureUrl: string;
-        biography: string | null;
-        accountType: "USER" | "ADMIN"; 
-        createdAt: string; 
-        updatedAt: string; 
-    }   
-    
+  id: string;
+  email: string;
+  name: string;
+  profilePictureUrl: string;
+  biography: string | null;
+  accountType: "USER" | "ADMIN"; 
+  createdAt: string; 
+  updatedAt: string; 
 };

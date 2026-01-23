@@ -31,13 +31,13 @@ export function NavbarDropdown({ show, size }: DropdownProps) {
     >
       <div className="flex gap-3 items-center border-b pb-2 border-b-[var(--border)]">
         <img
-          src={user.user.profilePictureUrl ?? "https://toppng.com/uploads/preview/instagram-default-profile-picture-11562973083brycehrmyv.png"}
+          src={user.profilePictureUrl ?? "https://toppng.com/uploads/preview/instagram-default-profile-picture-11562973083brycehrmyv.png"}
           alt="Profile picture"
           className="w-10 h-10"
         />
         <div>
-          <p className={`font-medium ${classes.textClass} `}>{user.user.name}</p>
-          <p className="text-sm">{user.user.email}</p>
+          <p className={`font-medium ${classes.textClass} `}>{user.name}</p>
+          <p className="text-sm">{user.email}</p>
         </div>
       </div>
 

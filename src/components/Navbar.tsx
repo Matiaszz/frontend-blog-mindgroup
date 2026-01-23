@@ -42,7 +42,7 @@ export function Navbar({showAuthLinks = true}: NavbarProps){
                     <div className="w-8 h-8">
                         <button className="hover:cursor-pointer" onClick={() => setShowDropdown(prev => !prev)}>
                             <img
-                            src={user.user.profilePictureUrl ?? 'https://toppng.com/uploads/preview/instagram-default-profile-picture-11562973083brycehrmyv.png'} />
+                            src={user.profilePictureUrl ?? 'https://toppng.com/uploads/preview/instagram-default-profile-picture-11562973083brycehrmyv.png'} />
                         </button>
                         <NavbarDropdown size={210} show={showDropdown} />
                     </div>
