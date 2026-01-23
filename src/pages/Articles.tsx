@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FormInput } from "../components/ui/FormInput";
 import { useArticles } from "../hooks/useArticles";
-import { Clock, Eye, Grid, Heart, LayoutGrid, LayoutList, List, Search, SearchIcon, View } from "lucide-react";
-import { API_URL, fetchApi } from "../services/api";
-import { ArticleImage } from "../components/ArticleImage";
-import { NavLink } from "../components/ui/NavLink";
+import { LayoutGrid, LayoutList, SearchIcon } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { ListArticleCard } from "../components/ListArticleCard";
+import { useCategories } from "../hooks/useCategories";
 
 export function Articles() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
-    const [category, setCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [view, setView] = useState<'grid' | 'column'>('grid');
     const {user, loading} = useUser();
     const articlesHook = useArticles();
+    const categoriesHook = useCategories();
     const {classes} = useTheme();
 
     
@@ -27,18 +26,24 @@ export function Articles() {
         }
     }, [loading]);
 
-    const extenseDateFormat = (date: string) => {
-      return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(date));
-    }
-
     const compactDateFormat = (date: string) => {
        return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(date));
     }
 
-    const filteredArticles = articlesHook.articles.filter(a =>
-      a.title.toLowerCase().includes(search.toLowerCase()) ||
-      a.summary.toLowerCase().includes(search.toLowerCase())
-    );
+    
+
+    const filteredArticles = articlesHook.articles.filter(a => {
+      const matchSearch =
+        search === '' ||
+        a.title.toLowerCase().includes(search.toLowerCase()) ||
+        a.summary.toLowerCase().includes(search.toLowerCase());
+
+      const matchCategory =
+        selectedCategory === '' ||
+        a.category.label.toLowerCase() === selectedCategory.toLowerCase();
+
+      return matchSearch && matchCategory;
+    });
 
     if (loading) return <h2>Carregando...</h2>
     return (
@@ -62,12 +67,12 @@ export function Articles() {
                     <select 
                       name="categories" 
                       id="categories" 
-                      onChange={(e) => setCategory(e.target.value)}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
                   >
-                      <option value="">Selecione uma categoria</option>
-                      <option value="tech">Tecnologia</option>
-                      <option value="games">Jogos</option>
-                      <option value="lifestyle">Estilo de vida</option>
+                    <option value="">Selecione uma categoria</option>
+                    {categoriesHook.categories.length > 0 && categoriesHook.categories.map(c => (
+                      <option value={c.label}>{c.label}</option>
+                    ))}
                   </select>
 
                   <div className="flex gap-3">
