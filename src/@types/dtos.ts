@@ -27,3 +27,38 @@ export type User = {
   createdAt: string; 
   updatedAt: string; 
 };
+
+export type Tag = {
+  id: number;
+  name: string;
+};
+
+export type PostTag = {
+  tag: Tag;
+};
+
+export type Author = {
+  id: string;
+  name: string;
+  email: string;
+  profilePictureUrl: string;
+};
+
+export type Category = {
+  id: number;
+  label: string;
+};
+
+export type Article = {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  published: boolean;
+  views: number;
+  averageReadTimeInMinutes: number;
+  createdAt: string;
+  author: Author;
+  category: Category;
+  postTags: PostTag[];
+};
