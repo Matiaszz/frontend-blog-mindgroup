@@ -8,13 +8,14 @@ import { useUser } from "../hooks/useUser";
 import { MetaInfo } from "../components/ListArticleCard";
 import { ArticleImage } from "../components/ArticleImage";
 import ReactMarkdown from "react-markdown";
+import { Button } from "../components/Button";
 
 export function Article(){
     const { id } = useParams<{ id: string }>();
     const [article, setArticle] = useState<Article>();
     const navigate = useNavigate();
     const {classes} = useTheme();
-    const {user} = useUser();
+    const {user, loading} = useUser();
 
     useEffect(() => {
         async function fetchArticle(){
@@ -107,7 +108,7 @@ export function Article(){
                     </div>
                 </div>
                 
-                <div>
+                <div className="">
                     <div className="flex gap-5 pb-4">
                         <MetaInfo className={`
                                 hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
@@ -133,8 +134,50 @@ export function Article(){
                     </div>
                 
                 </div>
+
+                <div className="flex gap-4 border-b border-b-[var(--border)] pb-10 items-center">
+                    {article.postTags.map(t => (
+                        <span className="p-1 bg-[var(--secondary)]">
+                            {t.tag.name}
+                        </span>
+                    ))}
+                </div>
+
+                <div className="flex flex-col gap-5">
+                    <h3>Comentário (X)</h3>
+                    <div className="flex flex-col gap-4">
+                        {!user && !loading && (<LoginCommentPlaceholder/>)}
+                        {user && !loading && (
+                            <>
+                                <textarea 
+                                className="bg-[var(--secondary)] border border-[var(--border)] min-w-full min-h-37 p-3"
+                                name="comment" id="comment">
+
+                                </textarea>
+                                <Button onClickAction={() => console.log('consolado')}>Publicar Comentário</Button>
+                            </>
+                            
+                        )}
+                    </div>
+                    
+                </div>
             </article>
             
        </section>
     )
+}
+
+function LoginCommentPlaceholder(){
+    const navigate = useNavigate();
+
+
+    return (
+        <div className="border border-[var(--border)] min-w-full min-h-37 flex flex-col justify-center items-center">
+            <div className="flex flex-col items-center gap-3">
+                <p className="text-[var(--muted-text)] text-[16px]">Faça login para comentar</p>
+                <Button onClickAction={() => navigate('/login')}>Fazer login</Button>
+            </div>
+        </div>
+    )
+
 }
