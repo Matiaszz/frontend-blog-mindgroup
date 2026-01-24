@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Article } from "../@types/dtos";
 import { getArticleById } from "../services/articleService";
 import { useTheme } from "../hooks/useTheme";
-import { ArrowLeft, Clock, Dot } from "lucide-react";
+import { ArrowLeft, Clock, Dot, Heart } from "lucide-react";
 import { useUser } from "../hooks/useUser";
 import { MetaInfo } from "../components/ListArticleCard";
 import { ArticleImage } from "../components/ArticleImage";
@@ -154,6 +154,43 @@ export function Article(){
                                 <Button onClickAction={() => console.log('consolado')}>Publicar Comentário</Button>
                             </>
                         )}
+                        {article.comments.map(comment => (
+                        <div key={comment.id} className="min-w-full border border-[var(--border)] p-8 mb-4">
+                            <div className="flex gap-5">
+                            {/* Avatar */}
+                            <div className="w-16 h-16">
+                                <img
+                                src={comment.user.profilePictureUrl}
+                                alt="Profile picture"
+                                className="w-full h-full rounded-full object-cover"
+                                />
+                            </div>
+
+                            {/* Conteúdo do comentário */}
+                            <div className="flex-1 flex flex-col">
+                                {/* Linha com nome/data e likes */}
+                                <div className="flex justify-between items-center">
+                                {/* Nome e data à esquerda */}
+                                <div className="flex flex-col">
+                                    <p className="font-semibold">{comment.user.name}</p>
+                                    <p className="text-sm text-gray-500">{compactDateFormat(comment.createdAt)}</p>
+                                </div>
+
+                                {/* Likes à direita */}
+                                <div className="flex items-center gap-2">
+                                    <Heart
+                                    className={`${comment.commentLikes.some(cl => cl.userId === user?.id) ? 'fill-red-500' : ''} hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition`}
+                                    />
+                                    <p>{comment.commentLikes.length}</p>
+                                </div>
+                                </div>
+
+                                {/* Conteúdo do comentário com espaçamento */}
+                                <p className="mt-4">{comment.content}</p>
+                            </div>
+                            </div>
+                        </div>
+                        ))}
                     </div>
                     
                 </div>
@@ -177,6 +214,9 @@ function LoginCommentPlaceholder(){
 
 }
 
-export const compactDateFormat = (date: string) => {
-       return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(date));
-    }
+export const compactDateFormat = (date?: string) => {
+    if (!date) return '';
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) return '';
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(parsedDate);
+}

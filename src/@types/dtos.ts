@@ -83,6 +83,15 @@ export type Comment = {
   content: string;
   postId: string;
   user: User;
+  createdAt: string;
+  commentLikes: CommentLikeResponseDTO[] 
+}
+
+export type CommentLikeResponseDTO = {
+  id: number,
+  userId: string,
+  postId: string,
+  commentId: number
 }
 
 export type CreatePostDTO = {
