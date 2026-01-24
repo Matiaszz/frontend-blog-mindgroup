@@ -69,7 +69,8 @@ export type Article = {
 export type Favorite = {
   id: number;
   userId: string;
-  postId: string
+  postId: string;
+  favorited: boolean;
 }
 
 export type Comment = {
@@ -84,6 +85,12 @@ export type Comment = {
 export type CreateLikeDTO = {
   postId: string;
 }
+
+export type CreateFavoriteDTO = {
+  postId: string;
+}
+
+
 export type Like = {
   id: number;
   postId: string;

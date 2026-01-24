@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { Article, Comment, Like } from "../@types/dtos";
-import { getArticleById, toggleLike } from "../services/articleService";
+import type { Article, Comment, Favorite, Like } from "../@types/dtos";
+import { getArticleById, toggleFavorite, toggleLike } from "../services/articleService";
 import { useTheme } from "../hooks/useTheme";
 import { ArrowLeft, Clock, Dot, Heart } from "lucide-react";
 import { useUser } from "../hooks/useUser";
@@ -21,9 +21,10 @@ export function Article(){
     const [comment, setComment] = useState<string>('');
     const [comments, setComments] = useState<Comment[]>([]);
     const [likes, setLikes] = useState<Like[]>([]);
+    const [favorites, setFavorites] = useState<Favorite[]>([]);
     const [disable, setDisable] = useState(false);
     const [userLiked, setUserLiked] = useState(false);
-    
+    const [userFavorited, setUserFavorited] = useState(false);
     
     useEffect(() => {
         async function fetchArticle(){
@@ -36,8 +37,9 @@ export function Article(){
                 setArticle(res.data!);
                 setComments(res.data!.comments);
                 setLikes(res.data!.likes);
+                setFavorites(res.data!.favorites);
                 setUserLiked(res.data!.likes.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
-                setUserLiked(res.data!.favorites.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
+                setUserFavorited(res.data!.favorites.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
             } catch(e){
                 console.error("Error on fetch Article: ", e);
             }
@@ -49,8 +51,6 @@ export function Article(){
     }, [id, navigate, user]);
 
     if (!article || !user) return;
-
-    let userFavorited = article.favorites.filter(f => f.userId === user.id).length > 0;
 
 
     async function handleCommentSubmit(){
@@ -94,11 +94,30 @@ export function Article(){
         if (res.data.body?.like){
             setLikes([...likes, {id: res.data.body.id, userId: user?.id ?? '', postId: article?.id ?? '', like: true}]);
             setUserLiked(true);
-        } else {
-            setLikes(likes.filter(l => l.userId !== user?.id && l.postId !== article?.id));
-            setUserLiked(false);
+            return;
+        } 
+
+        setLikes(likes.filter(l => l.userId !== user?.id && l.postId !== article?.id));
+        setUserLiked(false);
+        
+
+    }
+
+    async function handleFavorite() {
+        const res = await toggleFavorite({
+            postId: article!.id
+        });
+
+        if (!res.data) return;
+
+        if (res.data.body?.favorited){
+            setFavorites([...favorites, {id: res.data.body.id, userId: user?.id ?? '', postId: article?.id ?? '', favorited: true}]);
+            setUserFavorited(true);
+            return;
         }
 
+        setFavorites(favorites.filter(l => l.userId !== user?.id && l.postId !== article?.id));
+        setUserFavorited(false);
     }
 
     if (!article){
@@ -154,9 +173,9 @@ export function Article(){
                                 `} content="" type="likes"/>
                             </button>
                             
-                            <button>
+                            <button onClick={handleFavorite}>
                                 <MetaInfo className={`
-                                ${user && userFavorited ? 'fill-yellow-500 outline-0' : ''} 
+                                ${user && userFavorited ? 'fill-yellow-500 text-yellow-500' : ''} 
                                 hover:cursor-pointer hover:fill-yellow-500 hover:outline-0 hover:text-yellow-500 transition
                                 `} content="" type="favorite"/>
                             </button>
