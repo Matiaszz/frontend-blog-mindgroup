@@ -1,4 +1,4 @@
-import { Clock, Eye, Heart } from "lucide-react";
+import { Bookmark, Clock, Eye, Heart, MessageSquare, Share, Share2 } from "lucide-react";
 import type { Article } from "../@types/dtos";
 import { ArticleImage } from "./ArticleImage";
 import { Link } from "react-router-dom";
@@ -9,7 +9,7 @@ export function ListArticleCard({a}: {a: Article}){
       return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(date));
     }
     return (
-        <Link to='/dashboard' key={a.id} 
+        <Link to={`/artigo/${a.id}`} key={a.id} 
             className="
             bg-[var(--secondary)] 
             border 
@@ -33,12 +33,12 @@ export function ListArticleCard({a}: {a: Article}){
                 <p className="text-[14px]">{a.summary}</p>
                 <div className="flex justify-between">
                     <div className="author">
-                    <p className="text-[var(--muted-text)]">{a.author.name}</p>
+                        <p className="text-[var(--muted-text)]">{a.author.name}</p>
                     </div>
                     <div className="flex gap-6">
                     <MetaInfo type="readTime" content={a.averageReadTimeInMinutes.toString()}/>
                     <MetaInfo type='views' content={a.views.toString()}/>
-                    <MetaInfo type='likes' content={'3 (mock)'}/>
+                    <MetaInfo type='likes' content={a.likes.length.toString()}/>
                 </div>
                       
                 </div>
@@ -47,17 +47,21 @@ export function ListArticleCard({a}: {a: Article}){
     )
 }
 
-function MetaInfo({content, type}: {content: string, type: 'likes' | 'views' | 'readTime'}){
+export function MetaInfo({content, type, className, size = 16}: {content: string,  type: 'likes' | 'views' | 'readTime' | 'favorite' | 'share' | 'comment', className?:string, size?: number}){
     const icons = {
-        'likes': <Heart className="text-[var(--muted-text)]" size={16} />,
-        'views': <Eye className="text-[var(--muted-text)]" size={16} />,
-        'readTime': <Clock className="text-[var(--muted-text)]" size={16} />
+        'likes': <Heart className={`text-[var(--muted-text)] ${className}`} size={size} />,
+        'views': <Eye className={`text-[var(--muted-text)] ${className}`} size={size} />,
+        'readTime': <Clock className={`text-[var(--muted-text)] ${className}`} size={size} />,
+        'favorite': <Bookmark className={`text-[var(--muted-text)] ${className}`} size={size}/>,
+        'share': <Share2 className={`text-[var(--muted-text)] ${className}`} size={size}/>,
+        'comment': <MessageSquare className={`text-[var(--muted-text)] ${className}`} size={size}/>
     }
 
     return (
         <div className="flex justify-center items-center gap-2">
             {icons[type]}
-            <span className="text-[var(--muted-text)]">{content}</span>
+            <span className={` text-[var(--muted-text)]`}>{content}</span>
+            
         </div>
     )
 }

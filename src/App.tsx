@@ -6,7 +6,7 @@ import { NoAuthLinksLayout } from "./layouts/NoAuthLinksLayout";
 import { Register } from "./pages/Register";
 import { Articles } from "./pages/Articles";
 import { Dashbaord } from "./pages/Dashboard";
-
+import { Article } from "./pages/Article";
 function App() {
   return (
     <BrowserRouter>
@@ -14,7 +14,9 @@ function App() {
         <Route element={<DefaultLayout/>}>
           <Route path="/" element={<Home />} />
           <Route path="/artigos" element={<Articles/>} />
+          <Route path="/artigo/:id" element={<Article />} />
           <Route path="/dashboard" element={<Dashbaord/>}/>
+          
         </Route>
         <Route element={<NoAuthLinksLayout/>}>
           <Route path="/login" element={<Login />} />

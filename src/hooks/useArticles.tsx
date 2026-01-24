@@ -7,7 +7,7 @@ export function useArticles(){
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        async function fetchUser(){
+        async function fetchArticles(){
             try {
                 const res = await getAllArticles();
                 if (!res.data && res.errors){
@@ -21,7 +21,7 @@ export function useArticles(){
             setLoading(false);
         }
         
-        fetchUser()
+        fetchArticles()
     }, []);
 
     return { articles, loading};

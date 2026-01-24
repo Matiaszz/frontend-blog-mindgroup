@@ -14,5 +14,7 @@ export function Dashbaord() {
     }, [loading]);
 
     if (loading) return <h2>Carregando...</h2>
-    return <h1>Página de Dashboard</h1>;
+    return (
+        <section></section>
+    );
 }

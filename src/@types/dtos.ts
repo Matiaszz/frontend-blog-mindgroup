@@ -61,4 +61,18 @@ export type Article = {
   author: Author;
   category: Category;
   postTags: PostTag[];
+  likes: Like[];
+  favorites: Favorite[];
 };
+
+export type Like = {
+  id: number;
+  userId: string;
+  postId: string
+}
+
+export type Favorite = {
+  id: number;
+  userId: string;
+  postId: string
+}

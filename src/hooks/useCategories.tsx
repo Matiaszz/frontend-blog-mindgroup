@@ -7,7 +7,7 @@ export function useCategories(){
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        async function fetchUser(){
+        async function fetchCategories(){
             try {
                 const res = await getAllCategories();
                 if (!res.data && res.errors){
@@ -21,7 +21,7 @@ export function useCategories(){
             setLoading(false);
         }
         
-        fetchUser()
+        fetchCategories()
     }, []);
 
     return { categories, loading};
