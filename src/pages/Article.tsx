@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { Article } from "../@types/dtos";
+import type { Article, Comment } from "../@types/dtos";
 import { getArticleById } from "../services/articleService";
 import { useTheme } from "../hooks/useTheme";
 import { ArrowLeft, Clock, Dot, Heart } from "lucide-react";
@@ -10,6 +10,7 @@ import { ArticleImage } from "../components/ArticleImage";
 import ReactMarkdown from "react-markdown";
 import { Button } from "../components/Button";
 import remarkGfm from "remark-gfm";
+import { createComment } from "../services/commentService";
 
 export function Article(){
     const { id } = useParams<{ id: string }>();
@@ -17,6 +18,11 @@ export function Article(){
     const navigate = useNavigate();
     const {classes} = useTheme();
     const {user, loading} = useUser();
+    const [comment, setComment] = useState<string>('');
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [disable, setDisable] = useState(false);
+    
+    
 
     useEffect(() => {
         async function fetchArticle(){
@@ -27,6 +33,7 @@ export function Article(){
                     throw new Error('An error occurred.');
                 }
                 setArticle(res.data!);
+                setComments(res.data!.comments);
             } catch(e){
                 console.error("Error on fetch Article: ", e);
             }
@@ -36,6 +43,39 @@ export function Article(){
         fetchArticle()
         
     }, [id, navigate]);
+
+    async function handleCommentSubmit(){
+        if (!comment.trim() || !article){
+            return;
+        }
+
+        const res = await createComment({
+            postId: article.id,
+            content: comment.trim()
+        });
+
+        if (res.errors){
+            alert(res.errors);
+            return;
+        }
+        if (res.data) {
+            const newComment: Comment = {
+                id: res.data.id,
+                content: res.data.content,
+                postId: res.data.postId,
+                user: res.data.user,
+                commentLikes: res.data.commentLikes || [],
+                createdAt: res.data.createdAt
+            };
+
+            setComments(prev => [newComment, ...prev]);
+            setComment('');
+        }
+        setComment('');
+
+    }
+
+    
 
     if (!article){
         return <p>Carretgando..</p>;
@@ -115,7 +155,7 @@ export function Article(){
                             `} content={article.views.toString() + " Vizualizações"} type="views"/>
                         <MetaInfo className={`
                             hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
-                            `} content={`${article.comments.length} Comentários`} type="comment"/>
+                            `} content={`${comments.length} Comentários`} type="comment"/>
                     </div>
                     <div className="flex flex-col gap-15 border-b border-b-[var(--border)] p-5">
                         <div className="flex items-center justify-center">
@@ -141,23 +181,22 @@ export function Article(){
                 </div>
 
                 <div className="flex flex-col gap-5">
-                    <h3>Comentário ({article.comments.length})</h3>
+                    <h3>Comentário ({comments.length})</h3>
                     <div className="flex flex-col gap-4">
                         {!user && !loading && (<LoginCommentPlaceholder/>)}
                         {user && !loading && (
                             <>
                                 <textarea 
+                                onChange={(e) => setComment(e.target.value)}
                                 className="bg-[var(--secondary)] border border-[var(--border)] min-w-full min-h-37 p-3"
                                 name="comment" id="comment">
-
                                 </textarea>
-                                <Button onClickAction={() => console.log('consolado')}>Publicar Comentário</Button>
+                                <Button onClickAction={() => handleCommentSubmit()}>Publicar Comentário</Button>
                             </>
                         )}
-                        {article.comments.map(comment => (
+                        {user && !loading && comments.map(comment => (
                         <div key={comment.id} className="min-w-full border border-[var(--border)] p-8 mb-4">
                             <div className="flex gap-5">
-                            {/* Avatar */}
                             <div className="w-16 h-16">
                                 <img
                                 src={comment.user.profilePictureUrl}
@@ -166,17 +205,13 @@ export function Article(){
                                 />
                             </div>
 
-                            {/* Conteúdo do comentário */}
                             <div className="flex-1 flex flex-col">
-                                {/* Linha com nome/data e likes */}
                                 <div className="flex justify-between items-center">
-                                {/* Nome e data à esquerda */}
                                 <div className="flex flex-col">
                                     <p className="font-semibold">{comment.user.name}</p>
                                     <p className="text-sm text-gray-500">{compactDateFormat(comment.createdAt)}</p>
                                 </div>
 
-                                {/* Likes à direita */}
                                 <div className="flex items-center gap-2">
                                     <Heart
                                     className={`${comment.commentLikes.some(cl => cl.userId === user?.id) ? 'fill-red-500' : ''} hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition`}
@@ -185,7 +220,6 @@ export function Article(){
                                 </div>
                                 </div>
 
-                                {/* Conteúdo do comentário com espaçamento */}
                                 <p className="mt-4">{comment.content}</p>
                             </div>
                             </div>
