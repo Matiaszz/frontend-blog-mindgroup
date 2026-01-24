@@ -7,11 +7,17 @@ import type { Article } from "../@types/dtos";
 import { deleteArticleById, getMyArticles } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
+import { Modal } from "../components/Modal";
+import { useTheme } from "../hooks/useTheme";
+
 
 export function Dashbaord() {
     const navigate = useNavigate();
     const {user, loading} = useUser();
     const [articles, setArticles] = useState<Article[]>([]);
+    const [modalVisible, setModalVisible] = useState<null | 'create' | 'delete' | 'edit'>(null);
+    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+    const {classes} = useTheme();
     
     useEffect(() => {
         async function setup(){
@@ -53,8 +59,13 @@ export function Dashbaord() {
         return Math.ceil(s / articles.length);
     }
 
+
+    function confirmDelete(id: Article){
+        setModalVisible('delete');
+        setSelectedArticle(id);
+    }
+
     async function handleDelete(id: string) {
-        if(!confirm('Tem certeza que deseja excluir este artigo?')) return;
 
         const deleted = await deleteArticleById(id);
         if (!deleted.errors && deleted.data){
@@ -63,10 +74,6 @@ export function Dashbaord() {
             articles.filter(a => a.id !== id);
             return;
         }
-
-        alert(deleted.errors);
-
-
     }
 
     if (loading) return <h2>Carregando...</h2>
@@ -81,7 +88,7 @@ export function Dashbaord() {
             </div>
             <div className="flex gap-3">
                 <Button invertColors onClickAction={() => console.log("Config")}>
-                    <span className="flex gap-2 items-center">
+                    <span className="flex gap-2 items-center ">
                         <Settings />
                         Configurações
                     </span>
@@ -104,21 +111,21 @@ export function Dashbaord() {
             <InfoCard title="Tempo médio de leitura" icon='upscale' metric={getAverageReadTime()} />
         </div>
 
-        <div className="flex gap-10 border border-[var(--border)] p-5">
+        <div className="flex gap-10 border flex-wrap border-[var(--border)] p-5">
             
             <div className="flex-1 ">
                 <div className="border-b border-b-[var(--border)] pb-2 mb-5">
                     <h3>Meus Artigos</h3>
                 </div>
 
-                <div className="flex flex-col gap-5 border border-[var(--border)] p-5">
+                <div className="flex flex-col gap-5 border flex-wrap border-[var(--border)] p-5">
                     {articles.map(article => (
                     <div
                         key={article.id}
-                        className="flex justify-between items-center border-b border-b-[var(--border)] pb-3"
+                        className="flex justify-between flex-wrap items-center border-b border-b-[var(--border)] pb-3"
                     >
                         <div className="w-[120px]">
-                        <ArticleImage title={article.title} postId={article.id} />
+                            <ArticleImage title={article.title} postId={article.id} />
                         </div>
 
                         <div className="flex-1 px-5">
@@ -144,7 +151,7 @@ export function Dashbaord() {
                             </span>
                         </Button>
 
-                        <Button onClickAction={() => handleDelete(article.id)} invertColors>
+                        <Button onClickAction={() => confirmDelete(article)} invertColors>
                             <span className="flex gap-2 items-center">
                             <Trash />
                             Excluir
@@ -167,7 +174,31 @@ export function Dashbaord() {
 
         </div>
 
-        
+        {modalVisible === 'delete' && selectedArticle && (
+            <Modal title={`Excluir artigo`} onClose={() => setModalVisible(null)}>
+                <div className={`flex flex-col max-w-full justify-end ${classes.textClass}`}>
+                    <p className="text-[var(--muted-text)]">Tem certeza que deseja excluir este artigo? essa ação não pode ser desfeita</p>
+
+                    <div className="flex justify-end gap-3 w-full">
+                        <Button
+                            ignoreCSS
+                            className="bg-[var(--secondary)] border border-[var(--border)] p-3 hover:cursor-pointer hover:bg-[var(--primary)] transition text-[var(--text)]"
+                            onClickAction={() => setModalVisible(null)}
+                        >
+                            Cancelar
+                        </Button>
+
+                        <Button
+                            ignoreCSS
+                            className="bg-red-500/40 border-red-400 border text-red-300 p-3 hover:cursor-pointer hover:bg-red-700/80 transition"
+                            onClickAction={() => handleDelete(selectedArticle?.id)}
+                        >
+                            Excluir
+                        </Button>
+                    </div>
+                </div>                       
+            </Modal>
+        )}
 
         
     </section>

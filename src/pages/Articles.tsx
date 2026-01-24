@@ -12,7 +12,7 @@ export function Articles() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [view, setView] = useState<'grid' | 'column'>('grid');
+    const [view, setView] = useState<'grid' | 'column'>('column');
     const {user, loading} = useUser();
     const articlesHook = useArticles();
     const categoriesHook = useCategories();
