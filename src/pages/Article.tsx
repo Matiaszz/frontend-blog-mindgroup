@@ -120,6 +120,12 @@ export function Article(){
         setUserFavorited(false);
     }
 
+    async function handleShare() {
+        const currentUrl = window.location.href;
+        await navigator.clipboard.writeText(currentUrl);
+        alert("URL copiada para a área de transferência!");
+    }
+
     if (!article){
         return <p>Carretgando..</p>;
     }
@@ -180,7 +186,7 @@ export function Article(){
                                 `} content="" type="favorite"/>
                             </button>
 
-                            <button>
+                            <button onClick={handleShare}>
                                 <MetaInfo className={`
                                 hover:cursor-pointer hover:fill-blue-600 hover:outline-0 hover:text-blue-600 transition`} content="" type="share"/>
                             </button>

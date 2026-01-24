@@ -1,4 +1,4 @@
-import type { Article, Category, CreateLikeDTO, CreatePostDTO, Favorite, Like, ServiceResult, User } from "../@types/dtos";
+import type { Article, Category, CreateFavoriteDTO, CreateLikeDTO, CreatePostDTO, Favorite, Like, ServiceResult, User } from "../@types/dtos";
 import { API_URL, fetchApi } from "./api";
 
 export async function getAllArticles(): Promise<ServiceResult<Article[]>> {
@@ -175,7 +175,7 @@ export async function toggleLike(dto: CreateLikeDTO) {
   return {data: res, errors: null};
 }
 
-export async function toggleFavorite(dto: CreateLikeDTO) {
+export async function toggleFavorite(dto: CreateFavoriteDTO) {
   const res = await fetchApi<Favorite>({
     endpoint: `/toggleFavorite`,
     method: 'POST',
