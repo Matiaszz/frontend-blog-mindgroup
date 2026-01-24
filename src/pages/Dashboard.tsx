@@ -341,13 +341,16 @@ export function Dashbaord() {
                                 </Button>
 
                             </div>
-                            <div className="text-[12px] flex flex-wrap">
+                            <div className="text-[12px] flex  gap-3 flex-wrap">
                                 {createForm.tags.map(t => (
                                     <div key={t} className="border border-[var(--border)] flex items-center justify-center">
                                         <p>{t}</p>
-                                        <div onClick={(e) => {
-                                            
-                                        }}><X/></div>
+                                        <button  className="hover:cursor-pointer" onClick={(e) => {
+                                            setCreateForm({
+                                            ...createForm,
+                                            tags: createForm.tags.filter(tag => tag !== t)
+                                            });
+                                        }}><X/></button>
                                     </div>
                                 ))}
                             </div>
