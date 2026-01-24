@@ -9,6 +9,7 @@ import { MetaInfo } from "../components/ListArticleCard";
 import { ArticleImage } from "../components/ArticleImage";
 import ReactMarkdown from "react-markdown";
 import { Button } from "../components/Button";
+import remarkGfm from "remark-gfm";
 
 export function Article(){
     const { id } = useParams<{ id: string }>();
@@ -37,10 +38,8 @@ export function Article(){
     }, [id, navigate]);
 
     if (!article){
-        return null;
+        return <p>Carretgando..</p>;
     }
-
-    
 
 
     return (
@@ -124,8 +123,8 @@ export function Article(){
                             className="max-w-[90%]"
                             postId={article.id} title={article.title} />
                         </div>
-                        <div>
-                            <ReactMarkdown>  
+                        <div className="prose prose-neutral dark:prose-invert max-w-none">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {article.content}
                             </ReactMarkdown>
                         </div>

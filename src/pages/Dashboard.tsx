@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp } from "lucide-react";
+import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp, X } from "lucide-react";
 import type { Article, Category, CreatePostDTO } from "../@types/dtos";
 import { createPost, deleteArticleById, getMyArticles } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
@@ -36,6 +36,7 @@ export function Dashbaord() {
     const [modalVisible, setModalVisible] = useState<null | 'create' | 'delete' | 'edit'>(null);
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const categoriesHook = useCategories();
+    const [currentTag, setCurrentTag] = useState('');
     
     const [createForm, setCreateForm] = useState<CreatePostForm>(defaultCreateForm);
 
@@ -161,7 +162,7 @@ export function Dashbaord() {
             <InfoCard title="Total de Artigos" icon='file' metric={articles.length} />
             <InfoCard title="Engajamento" icon='comment' metric={getTotalComments()} />
             <InfoCard title="Curtidas" icon='like' metric={getTotalLikes()} />
-            <InfoCard title="Tempo médio de leitura" icon='upscale' metric={getAverageReadTime()} />
+            <InfoCard title="Tempo médio de leitura" icon='upscale' metric={!isNaN(getAverageReadTime()) ? getAverageReadTime() : 0} />
         </div>
 
         <div className="flex gap-10 border flex-wrap border-[var(--border)] p-5">
@@ -309,6 +310,48 @@ export function Dashbaord() {
                                 setCreateForm({...createForm, coverImage: file});
                             }}
                             />
+
+                        </div>
+
+                        <div className="flex flex-col">
+                            <FormInput 
+                                required
+                                type="text"
+                                label='Tags'
+                                identifier="tags"
+                                placeholder="Tags..."
+                                onChangeAction={(e) => setCurrentTag(e)}
+                                />
+                            <div className="flex flex-col items-end">
+                            
+                                <Button
+                                type='button'
+                                    onClickAction={() => {
+                                        if (!currentTag.trim()) return;
+
+                                        setCreateForm({
+                                        ...createForm,
+                                        tags: [...createForm.tags, currentTag.trim()]
+                                        });
+
+                                        setCurrentTag('');
+                                    }}
+                                >   
+                                    <Plus />
+                                </Button>
+
+                            </div>
+                            <div className="text-[12px] flex flex-wrap">
+                                {createForm.tags.map(t => (
+                                    <div key={t} className="border border-[var(--border)] flex items-center justify-center">
+                                        <p>{t}</p>
+                                        <div onClick={(e) => {
+                                            
+                                        }}><X/></div>
+                                    </div>
+                                ))}
+                            </div>
+                            
 
                         </div>
 

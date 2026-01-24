@@ -5,14 +5,17 @@ type ButtonProps = {
   invertColors?: boolean;
   className?: string;
   ignoreCSS?: boolean
+  type?: 'button' | 'submit'
 };
 
 export function Button({
   children,
   onClickAction,
+  type = 'submit',
   invertColors = false,
   className = '',
   ignoreCSS = false
+  
 }: ButtonProps) {
   const baseClasses =
     `transition p-2.5 hover:cursor-pointer ${className}`;
@@ -25,6 +28,7 @@ export function Button({
 
   return (
     <button
+      type={type}
       onClick={onClickAction}
       className={`${!ignoreCSS ? `${baseClasses} ${invertColors ? invertedClasses : normalClasses}` : className}`}
     >
