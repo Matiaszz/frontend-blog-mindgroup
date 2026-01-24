@@ -66,7 +66,6 @@ export async function createPost(dto: CreatePostDTO, file: File | null): Promise
     return { data: null, errors };
   }
 
-  console.log(dto);
   const response = await fetchApi<Article>({
     endpoint: "/post",
     method: "POST",
@@ -90,6 +89,70 @@ export async function createPost(dto: CreatePostDTO, file: File | null): Promise
     await deleteArticleById(response.body!.id);
     throw new Error(error);
   }
+
+  return {
+    data: response.body,
+    errors: null
+  };
+}
+
+export async function updateArticleById(id:string, dto: CreatePostDTO, file?: File | null): Promise<ServiceResult<Article>> {
+  console.warn(dto);
+  const errors: string[] = [];
+
+  if (!dto.categoryId) errors.push("Category is required");
+  if (!dto.content.trim()) errors.push("Content is required");
+  if (!dto.summary.trim()) errors.push('Summary is required');
+  if (!dto.title.trim()) errors.push('Title is required');
+    
+  if (errors.length > 0) {
+    return { data: null, errors };
+  }
+
+  const response = await fetchApi<Article>({
+    endpoint: "/post/" + id,
+    method: "PUT",
+    body: dto,
+  });
+
+  if (errors.length > 0) {
+    return { data: null, errors };
+  }
+
+  if (file) { 
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const removeBanner = await fetch(`${API_URL}/post/${response.body?.id}/removeCover`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: formData
+    });
+
+    if (!removeBanner.ok){
+      const error = await removeBanner.text();
+
+      throw new Error(error);
+    }
+
+    const sendBanner = await fetch(`${API_URL}/post/${response.body?.id}/upload`, {
+      method: "POST",
+      credentials: "include",
+      body: formData, 
+    });
+
+    if (!sendBanner.ok) {
+      const error = await sendBanner.text();
+
+      throw new Error(error);
+    }
+
+
+    return {data: response.body, errors: null};
+
+  };
+    
+  
 
   return {
     data: response.body,

@@ -11,15 +11,17 @@ type InputProps = {
     required?: boolean;
     isTextArea?: boolean;
     readonly?: boolean;
+    value?: string | number;
 }
 
-export function FormInput({onChangeAction, type, identifier, placeholder, label, readonly = false, ignoreCSS = false, className = '', required = false}: InputProps){
+export function FormInput({onChangeAction, type, identifier, placeholder, label, value = '', readonly = false, ignoreCSS = false, className = '', required = false}: InputProps){
     return (
     <>
         {type !== 'textarea' && (
             <>
                 <label className="text-[12px]" htmlFor={identifier}>{label} {`${required ? '*' : ''}`}</label>
                 <input
+                value={value}
                 required={required}
                 readOnly={readonly}
                 className={`${!ignoreCSS ? 'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]' : ''} ${className}`}
@@ -36,6 +38,7 @@ export function FormInput({onChangeAction, type, identifier, placeholder, label,
             <>
                 <label className="text-[12px]" htmlFor={identifier}>{label} {`${required ? '*' : ''}`}</label>
                 <textarea
+                value={value}
                 required={required}
                 readOnly={readonly}
                 className={`${!ignoreCSS ? 'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]' : ''} ${className}`}

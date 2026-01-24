@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp, X } from "lucide-react";
 import type { Article, Category, CreatePostDTO } from "../@types/dtos";
-import { createPost, deleteArticleById, getMyArticles } from "../services/articleService";
+import { createPost, deleteArticleById, getMyArticles, updateArticleById } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
 import { Modal } from "../components/Modal";
@@ -39,6 +39,7 @@ export function Dashbaord() {
     const [currentTag, setCurrentTag] = useState('');
     
     const [createForm, setCreateForm] = useState<CreatePostForm>(defaultCreateForm);
+    const [editForm, setEditForm] = useState<CreatePostForm>(defaultCreateForm);
 
 
     const {classes} = useTheme();
@@ -126,8 +127,50 @@ export function Dashbaord() {
         setCreateForm(defaultCreateForm);
     }
 
-    const disableBtn = () =>{
-        return createForm.content.length < 20 || createForm.summary.length < 10 || createForm.title.length < 3;
+    async function handleEdit(e: React.FormEvent, article: Article) {
+         e.preventDefault();
+
+        if (!editForm.categoryId) return;
+        const dto: CreatePostDTO = {
+            title: editForm.title,
+            summary: editForm.summary,
+            categoryId: editForm.categoryId,
+            tags: editForm.tags,
+            content: editForm.content
+        };
+
+        const res = await updateArticleById(article.id, dto, editForm.coverImage);
+        if (res.errors && !res.data){
+            console.error(res.errors);
+            alert(res.errors);
+            return;
+        }
+
+        setArticles(articles.map(a => 
+            a.id === article.id ? (res.data as Article) : a
+        ));        
+        alert('success');
+        setModalVisible(null);
+        setEditForm(defaultCreateForm);
+    }
+
+    function openEditModal(article: Article) {
+        setSelectedArticle(article);
+        setEditForm({
+            title: article.title,
+            summary: article.summary,
+            categoryId: article.category.id,
+            coverImage: null,
+            tags: article.postTags.map(pt => pt.tag.name),
+            content: article.content
+        });
+        setModalVisible('edit');
+        console.warn(createForm);
+    }
+
+
+    const disableBtn = (form: CreatePostForm) =>{
+        return form.content.length < 20 || form.summary.length < 10 || form.title.length < 3;
     }
 
     if (loading) return <h2>Carregando...</h2>
@@ -198,7 +241,8 @@ export function Dashbaord() {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                        <Button onClickAction={() => {}} invertColors>
+                        <Button onClickAction={() => openEditModal(article)} 
+                            invertColors>
                             <span className="flex gap-2 items-center">
                             <Edit />
                             Editar
@@ -262,6 +306,7 @@ export function Dashbaord() {
                             <FormInput 
                             required
                             type="text"
+                            value={createForm.title}
                             label='Título do artigo'
                             identifier="title"
                             placeholder="Título... (mínimo 3 caracteres)"
@@ -273,6 +318,7 @@ export function Dashbaord() {
                              <FormInput 
                                 required
                                 type="textarea"
+                                value={createForm.summary}
                                 label='Resumo'
                                 identifier="summary"
                                 placeholder="Resumo... (mínimo 10 caracteres)"
@@ -283,6 +329,7 @@ export function Dashbaord() {
                             <label className="text-[12px]" htmlFor="category">Categoria *</label>
                             <select
                             required
+
                             name="category"
                             value={String(createForm.categoryId)}
                             onChange={(e) => setCreateForm({...createForm, categoryId: Number.parseInt(e.target.value)})}
@@ -317,6 +364,7 @@ export function Dashbaord() {
                             <FormInput 
                                 required
                                 type="text"
+                                value={currentTag}
                                 label='Tags'
                                 identifier="tags"
                                 placeholder="Tags..."
@@ -361,6 +409,7 @@ export function Dashbaord() {
                         <div className="flex flex-col">
                             <FormInput 
                             required
+                            value={createForm.content}
                             type="textarea"
                             label='Conteúdo'
                             identifier="content"
@@ -378,17 +427,152 @@ export function Dashbaord() {
                         <div className="flex items-center justify-end gap-3">
                             <button  
                             className="transition p-2.5 disabled:bg-gray-500 disabled:cursor-not-allowed hover:cursor-pointer bg-[var(--primary)] text-[var(--bg)] hover:bg-cyan-800"
-                            disabled={disableBtn()} type="submit">
+                            disabled={disableBtn(createForm)} type="submit">
                                 {loading ? 'Carregando...' : `Publicar artigo`}
                             </button>
                             <Button invertColors onClickAction={() => setModalVisible(null)}>Cancelar</Button>
                         </div>
-                       
-
-                        
                     </form>
                 </div>                       
             </Modal>
+        )}
+
+        {modalVisible === 'edit' && selectedArticle && (
+            <Modal title={`Editar artigo`} onClose={() => setModalVisible(null)}>
+                <div className={`flex flex-col max-w-full justify-end ${classes.textClass}`}>
+                    <form className="flex flex-col gap-5" onSubmit={(e) => handleEdit(e, selectedArticle)}>
+                        <div className="flex flex-col">
+                            <FormInput 
+                            value={editForm.title}
+                            required
+                            type="text"
+                            label='Título do artigo'
+                            identifier="title"
+                            placeholder="Título... (mínimo 3 caracteres)"
+                            onChangeAction={(e) => setEditForm({...editForm, title: e})}/>
+
+                        </div>
+
+                        <div className="flex flex-col">
+                             <FormInput 
+                                required
+                                value={editForm.summary}
+                                type="textarea"
+                                label='Resumo'
+                                identifier="summary"
+                                placeholder="Resumo... (mínimo 10 caracteres)"
+                                onChangeAction={(e) => setEditForm({...editForm, summary: e})}/>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="text-[12px]" htmlFor="category">Categoria *</label>
+                            <select
+                            required
+                            name="category"
+                            value={String(editForm.categoryId)}
+                            onChange={(e) => setEditForm({...editForm, categoryId: Number.parseInt(e.target.value)})}
+                            >
+                            <option value="">Selecione uma categoria</option>
+
+                            {categoriesHook.categories.map(c => (
+                                <option key={c.id} value={c.id}>
+                                    {c.label}
+                                </option>
+                            ))}
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label htmlFor="coverImage">Imagem de Capa</label>
+                            <input
+                            type="file"
+                            className={'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]'}
+                            name="coverImage"
+                            id="coverImage"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0] ?? null;
+                                setEditForm({...editForm, coverImage: file});
+                            }}
+                            />
+
+                        </div>
+
+                        <div className="flex flex-col">
+                            <FormInput 
+                                type="text"
+                                value={currentTag}
+                                label='Tags'
+                                identifier="tags"
+                                placeholder="Tags..."
+                                onChangeAction={(e) => setCurrentTag(e)}
+                                />
+                            <div className="flex flex-col items-end">
+                            
+                                <Button
+                                type='button'
+
+                                    onClickAction={() => {
+                                        if (!currentTag.trim()) return;
+
+                                        setEditForm({
+                                        ...editForm,
+                                        tags: [...editForm.tags, currentTag.trim()]
+                                        });
+
+                                        setCurrentTag('');
+                                    }}
+                                >   
+                                    <Plus />
+                                </Button>
+
+                            </div>
+                            <div className="text-[12px] flex  gap-3 flex-wrap">
+                                {editForm.tags.map(t => (
+                                    <div key={t} className="border border-[var(--border)] flex items-center justify-center">
+                                        <p>{t}</p>
+                                        <button  className="hover:cursor-pointer" onClick={(e) => {
+                                            setEditForm({
+                                            ...editForm,
+                                            tags: editForm.tags.filter(tag => tag !== t)
+                                            });
+                                        }}><X/></button>
+                                    </div>
+                                ))}
+                            </div>
+                            
+
+                        </div>
+
+                        <div className="flex flex-col">
+                            <FormInput 
+                            required
+                            type="textarea"
+                            value={editForm.content}
+                            label='Conteúdo'
+                            identifier="content"
+                            placeholder="Conteúdo...(mínimo 20 caracteres )"
+                            onChangeAction={(e) => setEditForm({...editForm, content: e})}/>
+                            <div className="flex items-center">
+                                <p className="text-[var(--muted-text)] text-[12px]">{editForm.content.length} Caracteres</p>
+                                <Dot></Dot>
+                                <p className="text-[var(--muted-text)] text-[12px]">{editForm.content.trim().split(' ').length} Palavras</p>
+                                <Dot></Dot>
+                                <p className="text-[var(--muted-text)] text-[12px]">{Math.ceil(editForm.content.length / 200)} minutos de leitura</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-end gap-3">
+                            <button
+                            className="transition p-2.5 disabled:bg-gray-500 disabled:cursor-not-allowed hover:cursor-pointer bg-[var(--primary)] text-[var(--bg)] hover:bg-cyan-800"
+                            disabled={disableBtn(editForm)} type="submit">
+                                {loading ? 'Carregando...' : `Editar artigo`}
+                            </button>
+                            <Button invertColors onClickAction={() => setModalVisible(null)}>Cancelar</Button>
+                        </div>
+                    </form>
+                </div>                       
+            </Modal>
+
         )}
     </section>
   );
