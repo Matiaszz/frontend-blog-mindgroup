@@ -86,7 +86,7 @@ export type Comment = {
   postId: string;
   user: User;
   createdAt: string;
-  commentLikes: CommentLikeResponseDTO[];
+  commentLikes: CommentLike[];
 }
 
 export type CreateLikeDTO = {
@@ -106,11 +106,12 @@ export type Like = {
 }
 
 
-export type CommentLikeResponseDTO = {
+export type CommentLike = {
   id: number,
   userId: string,
   postId: string,
-  commentId: number
+  commentId: number,
+  commentLiked: boolean
 }
 
 export type CreatePostDTO = {

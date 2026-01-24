@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { Article, Comment, Favorite, Like } from "../@types/dtos";
-import { getArticleById, toggleFavorite, toggleLike } from "../services/articleService";
+import type { Article, Comment, CommentLike, Favorite, Like } from "../@types/dtos";
+import { getArticleById, toggleCommentLike, toggleFavorite, toggleLike } from "../services/articleService";
 import { useTheme } from "../hooks/useTheme";
 import { ArrowLeft, Clock, Dot, Heart } from "lucide-react";
 import { useUser } from "../hooks/useUser";
@@ -25,6 +25,8 @@ export function Article(){
     const [disable, setDisable] = useState(false);
     const [userLiked, setUserLiked] = useState(false);
     const [userFavorited, setUserFavorited] = useState(false);
+    const [commentLikes, setCommentLikes] = useState<Record<number, CommentLike[]>>([]);
+    const [userCommentLikes, setUserCommentLikes] = useState<Record<number, boolean>>({})
     
     useEffect(() => {
         async function fetchArticle(){
@@ -39,6 +41,18 @@ export function Article(){
                 setLikes(res.data!.likes);
                 setFavorites(res.data!.favorites);
                 setUserLiked(res.data!.likes.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
+
+                const newCommentLikes: Record<number, CommentLike[]> = {};
+                const newUserCommentLikes: Record<number, boolean> = {};
+                res.data!.comments.forEach(c => {
+                    newCommentLikes[c.id] = c.commentLikes; 
+                    newUserCommentLikes[c.id] = c.commentLikes.some(cl => cl.userId === user?.id);
+                });
+
+                setCommentLikes(newCommentLikes);
+                setUserCommentLikes(newUserCommentLikes);
+                
+
                 setUserFavorited(res.data!.favorites.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
             } catch(e){
                 console.error("Error on fetch Article: ", e);
@@ -102,6 +116,54 @@ export function Article(){
         
 
     }
+
+     async function handleCommentLike(commentId: number) {
+        if (!user || !article) return;
+
+        try {
+            const res = await toggleCommentLike({ commentId });
+            if (!res.data) return;
+
+            const currentLikes = commentLikes[commentId] || [];
+
+            if (res.data.body?.commentLiked) {
+                const newLike: CommentLike = {
+                    id: res.data.body.id,
+                    userId: user.id,
+                    postId: article.id,
+                    commentId: commentId,
+                    commentLiked: true,
+                };
+
+                setCommentLikes({
+                    ...commentLikes,
+                    [commentId]: [...currentLikes, newLike],
+                });
+
+                setUserCommentLikes({
+                    ...userCommentLikes,
+                    [commentId]: true,
+                });
+                return;
+            }
+        const updatedLikes = currentLikes.filter(l => l.userId !== user.id);
+
+        setCommentLikes({
+            ...commentLikes,
+            [commentId]: updatedLikes,
+        });
+
+        setUserCommentLikes({
+            ...userCommentLikes,
+            [commentId]: false,
+        });
+
+        return;
+        } catch (err) {
+            console.error("Erro ao curtir comentário:", err);
+        }
+    }
+
 
     async function handleFavorite() {
         const res = await toggleFavorite({
@@ -262,10 +324,13 @@ export function Article(){
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    <Heart
-                                    className={`${comment.commentLikes.some(cl => cl.userId === user?.id) ? 'fill-red-500' : ''} hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition`}
-                                    />
-                                    <p>{comment.commentLikes.length}</p>
+                                    <button onClick={() => handleCommentLike(comment.id)}>
+                                        <Heart
+                                        className={`${commentLikes[comment.id].some(cl => cl.userId === user?.id) ? 'text-red-500 fill-red-500' : ''} hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition`}
+                                        />
+                                    </button>
+                                    
+                                    <p>{commentLikes[comment.id].length}</p>
                                 </div>
                                 </div>
 

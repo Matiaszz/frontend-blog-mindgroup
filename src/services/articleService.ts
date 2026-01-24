@@ -164,7 +164,7 @@ export async function updateArticleById(id:string, dto: CreatePostDTO, file?: Fi
 export async function toggleLike(dto: CreateLikeDTO) {
   const res = await fetchApi<Like>({
     endpoint: `/toggleLike`,
-    method: 'POST',
+    method: 'PUT',
     body: dto
   });
 
@@ -178,7 +178,22 @@ export async function toggleLike(dto: CreateLikeDTO) {
 export async function toggleFavorite(dto: CreateFavoriteDTO) {
   const res = await fetchApi<Favorite>({
     endpoint: `/toggleFavorite`,
-    method: 'POST',
+    method: 'PUT',
+    body: dto
+  });
+
+    if (res.statusCode >= 400 && res.statusCode <= 599){
+      return {data: null, errors: ['Um erro ocorreu.' + res.body]}
+    }
+    
+  return {data: res, errors: null};
+}
+
+
+export async function toggleCommentLike(dto: {commentId: number}) {
+  const res = await fetchApi<Favorite>({
+    endpoint: `/toggleCommentLike`,
+    method: 'PUT',
     body: dto
   });
 
