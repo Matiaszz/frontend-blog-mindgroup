@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp, X } from "lucide-react";
 import type { Article, Category, CreatePostDTO } from "../@types/dtos";
@@ -217,9 +217,9 @@ export function Dashbaord() {
 
                 <div className="flex flex-col gap-5 border flex-wrap border-[var(--border)] p-5">
                     {articles.map(article => (
-                    <div
+                    <Link to={`/artigo/${article.id}`}
                         key={article.id}
-                        className="flex justify-between flex-wrap items-center border-b border-b-[var(--border)] pb-3"
+                        className="flex justify-between flex-wrap items-center border-b border-b-[var(--border)] pb-3 hover:border-[var(--primary)] transition"
                     >
                         <div className="w-[120px]">
                             <ArticleImage title={article.title} postId={article.id} />
@@ -256,7 +256,7 @@ export function Dashbaord() {
                             </span>
                         </Button>
                         </div>
-                    </div>
+                    </Link>
                     ))}
                 </div>
             </div>
@@ -362,7 +362,6 @@ export function Dashbaord() {
 
                         <div className="flex flex-col">
                             <FormInput 
-                                required
                                 type="text"
                                 value={currentTag}
                                 label='Tags'
@@ -588,8 +587,8 @@ function InfoCard({title, icon, metric}: {title: string, icon: 'file' | 'comment
     }
 
     return (
-    <div className="flex flex-col w-75 h-27 border border-[var(--border)] p-3">
-        <div className="flex justify-between items-center">
+    <div className="flex flex-col w-75 h-27 border border-[var(--border)] p-3 hover:border-[var(--primary)]">
+        <div className="flex justify-between items-center transition">
             <h4 className="text-[var(--muted-text)] text-[18px]">{title}</h4>
             {icons[icon]}
         </div>

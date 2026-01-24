@@ -29,7 +29,7 @@ export function NavbarDropdown({ show, size }: DropdownProps) {
         p-4
       `}
     >
-      <div className="flex gap-3 items-center border-b pb-2 border-b-[var(--border)]">
+      <div className="flex gap-3 items-center border-b pb-2 border-b-[var(--border)] max-w-[90vw] max-h-[90vh]">
         <img
           src={user.profilePictureUrl ?? "https://toppng.com/uploads/preview/instagram-default-profile-picture-11562973083brycehrmyv.png"}
           alt="Profile picture"

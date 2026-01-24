@@ -7,6 +7,9 @@ import { Register } from "./pages/Register";
 import { Articles } from "./pages/Articles";
 import { Dashbaord } from "./pages/Dashboard";
 import { Article } from "./pages/Article";
+import { Settings } from "./pages/Settings";
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -16,7 +19,7 @@ function App() {
           <Route path="/artigos" element={<Articles/>} />
           <Route path="/artigo/:id" element={<Article />} />
           <Route path="/dashboard" element={<Dashbaord/>}/>
-          
+          <Route path="/configuracoes" element={<Settings/>}/>
         </Route>
         <Route element={<NoAuthLinksLayout/>}>
           <Route path="/login" element={<Login />} />
