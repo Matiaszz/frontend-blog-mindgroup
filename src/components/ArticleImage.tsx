@@ -17,8 +17,8 @@ export function ArticleImage({ postId, title, className }: { postId: string; tit
             setCoverUrl('./default-cover.png');
         }
         } catch (err) {
-        console.error("Erro ao carregar cover:", err);
-        setCoverUrl('./default-cover.png'); 
+          console.error("Erro ao carregar cover:", err);
+          setCoverUrl('./default-cover.png'); 
         }
     }
 

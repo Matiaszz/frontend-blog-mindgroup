@@ -38,3 +38,17 @@ export async function getMyArticles(): Promise<ServiceResult<Article[]>> {
     
     return {data: data.body, errors: null};
 }
+
+
+export async function deleteArticleById(id: string) {
+  const res = await fetchApi<void>({
+    endpoint: `/post/${id}`,
+    method: 'DELETE'
+  });
+
+  if (res.statusCode >= 400 && res.statusCode <= 599){
+    return {data: null, errors: ['Um erro ocorreu.' + res.body]}
+  }
+  
+  return {data: true, errors: null};
+}

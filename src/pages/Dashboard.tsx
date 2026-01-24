@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp } from "lucide-react";
 import type { Article } from "../@types/dtos";
-import { getMyArticles } from "../services/articleService";
+import { deleteArticleById, getMyArticles } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
 
@@ -53,6 +53,22 @@ export function Dashbaord() {
         return Math.ceil(s / articles.length);
     }
 
+    async function handleDelete(id: string) {
+        if(!confirm('Tem certeza que deseja excluir este artigo?')) return;
+
+        const deleted = await deleteArticleById(id);
+        if (!deleted.errors && deleted.data){
+            alert('Artigo deletado.');
+            setArticles(articles.filter(a => a.id !== id));
+            articles.filter(a => a.id !== id);
+            return;
+        }
+
+        alert(deleted.errors);
+
+
+    }
+
     if (loading) return <h2>Carregando...</h2>
     return (
     <section className="flex flex-col min-h-screen p-20 gap-10 items-center">
@@ -88,14 +104,14 @@ export function Dashbaord() {
             <InfoCard title="Tempo médio de leitura" icon='upscale' metric={getAverageReadTime()} />
         </div>
 
-        <div className="flex gap-10">
+        <div className="flex gap-10 border border-[var(--border)] p-5">
             
-            <div className="flex-1">
+            <div className="flex-1 ">
                 <div className="border-b border-b-[var(--border)] pb-2 mb-5">
                     <h3>Meus Artigos</h3>
                 </div>
 
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-5 border border-[var(--border)] p-5">
                     {articles.map(article => (
                     <div
                         key={article.id}
@@ -107,7 +123,7 @@ export function Dashbaord() {
 
                         <div className="flex-1 px-5">
                         <h3>{article.title}</h3>
-                        <p>{article.summary}</p>
+                        <p>{article.summary.length > 60 ? `${article.summary.substring(0, 60)}...` : article.summary}</p>
 
                         <div className="flex items-center gap-3 text-sm mt-2">
                             <p>{compactDateFormat(article.createdAt)}</p>
@@ -128,7 +144,7 @@ export function Dashbaord() {
                             </span>
                         </Button>
 
-                        <Button onClickAction={() => {}} invertColors>
+                        <Button onClickAction={() => handleDelete(article.id)} invertColors>
                             <span className="flex gap-2 items-center">
                             <Trash />
                             Excluir
