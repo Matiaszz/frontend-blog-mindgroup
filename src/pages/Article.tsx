@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { Article, Comment } from "../@types/dtos";
-import { getArticleById } from "../services/articleService";
+import type { Article, Comment, Like } from "../@types/dtos";
+import { getArticleById, toggleLike } from "../services/articleService";
 import { useTheme } from "../hooks/useTheme";
 import { ArrowLeft, Clock, Dot, Heart } from "lucide-react";
 import { useUser } from "../hooks/useUser";
@@ -20,10 +20,11 @@ export function Article(){
     const {user, loading} = useUser();
     const [comment, setComment] = useState<string>('');
     const [comments, setComments] = useState<Comment[]>([]);
+    const [likes, setLikes] = useState<Like[]>([]);
     const [disable, setDisable] = useState(false);
+    const [userLiked, setUserLiked] = useState(false);
     
     
-
     useEffect(() => {
         async function fetchArticle(){
             try {
@@ -34,6 +35,9 @@ export function Article(){
                 }
                 setArticle(res.data!);
                 setComments(res.data!.comments);
+                setLikes(res.data!.likes);
+                setUserLiked(res.data!.likes.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
+                setUserLiked(res.data!.favorites.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
             } catch(e){
                 console.error("Error on fetch Article: ", e);
             }
@@ -42,7 +46,12 @@ export function Article(){
 
         fetchArticle()
         
-    }, [id, navigate]);
+    }, [id, navigate, user]);
+
+    if (!article || !user) return;
+
+    let userFavorited = article.favorites.filter(f => f.userId === user.id).length > 0;
+
 
     async function handleCommentSubmit(){
         if (!comment.trim() || !article){
@@ -75,7 +84,22 @@ export function Article(){
 
     }
 
-    
+    async function handleLike() {
+        const res = await toggleLike({
+            postId: article!.id,
+        });
+
+        if (!res.data) return;
+
+        if (res.data.body?.like){
+            setLikes([...likes, {id: res.data.body.id, userId: user?.id ?? '', postId: article?.id ?? '', like: true}]);
+            setUserLiked(true);
+        } else {
+            setLikes(likes.filter(l => l.userId !== user?.id && l.postId !== article?.id));
+            setUserLiked(false);
+        }
+
+    }
 
     if (!article){
         return <p>Carretgando..</p>;
@@ -123,16 +147,16 @@ export function Article(){
                         </div>
 
                         <div className="flex justify-center items-center ">
-                            <button>
+                            <button onClick={handleLike}>
                                 <MetaInfo className={`
-                                ${user && article.favorites.filter(f => f.userId === user.id).length > 0 ? 'fill-red-600 outline-0' : ''} 
+                                ${user && userLiked ? 'fill-red-600  text-red-600' : ''} 
                                 hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
                                 `} content="" type="likes"/>
                             </button>
                             
                             <button>
                                 <MetaInfo className={`
-                                ${user && article.likes.filter(f => f.userId === user.id).length > 0 ? 'fill-yellow-500 outline-0' : ''} 
+                                ${user && userFavorited ? 'fill-yellow-500 outline-0' : ''} 
                                 hover:cursor-pointer hover:fill-yellow-500 hover:outline-0 hover:text-yellow-500 transition
                                 `} content="" type="favorite"/>
                             </button>
@@ -149,7 +173,7 @@ export function Article(){
                     <div className="flex gap-5 pb-4">
                         <MetaInfo className={`
                             hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
-                            `} content={article.likes.length.toString() + " Curtidas"} type="likes"/>
+                            `} content={likes.length.toString() + " Curtidas"} type="likes"/>
                         <MetaInfo className={`
                             hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
                             `} content={article.views.toString() + " Vizualizações"} type="views"/>

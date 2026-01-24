@@ -66,12 +66,6 @@ export type Article = {
   comments: Comment[];
 };
 
-export type Like = {
-  id: number;
-  userId: string;
-  postId: string
-}
-
 export type Favorite = {
   id: number;
   userId: string;
@@ -84,8 +78,19 @@ export type Comment = {
   postId: string;
   user: User;
   createdAt: string;
-  commentLikes: CommentLikeResponseDTO[] 
+  commentLikes: CommentLikeResponseDTO[];
 }
+
+export type CreateLikeDTO = {
+  postId: string;
+}
+export type Like = {
+  id: number;
+  postId: string;
+  userId: string;
+  like: boolean;
+}
+
 
 export type CommentLikeResponseDTO = {
   id: number,

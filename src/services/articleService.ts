@@ -1,4 +1,4 @@
-import type { Article, Category, CreatePostDTO, ServiceResult, User } from "../@types/dtos";
+import type { Article, Category, CreateLikeDTO, CreatePostDTO, Like, ServiceResult, User } from "../@types/dtos";
 import { API_URL, fetchApi } from "./api";
 
 export async function getAllArticles(): Promise<ServiceResult<Article[]>> {
@@ -158,4 +158,19 @@ export async function updateArticleById(id:string, dto: CreatePostDTO, file?: Fi
     data: response.body,
     errors: null
   };
+}
+
+
+export async function toggleLike(dto: CreateLikeDTO) {
+  const res = await fetchApi<Like>({
+    endpoint: `/toggleLike`,
+    method: 'POST',
+    body: dto
+  });
+
+    if (res.statusCode >= 400 && res.statusCode <= 599){
+      return {data: null, errors: ['Um erro ocorreu.' + res.body]}
+    }
+    
+  return {data: res, errors: null};
 }
