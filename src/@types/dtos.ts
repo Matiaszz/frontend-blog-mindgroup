@@ -28,6 +28,13 @@ export type User = {
   updatedAt: string; 
 };
 
+export type UpdateUserDTO = {
+  name: string,
+  email: string,
+  biography: string,
+  profilePictureUrl: string
+}
+
 export type Tag = {
   id: number;
   name: string;

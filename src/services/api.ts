@@ -13,7 +13,7 @@ type Fetch = {
 
 export async function fetchApi<T>(
   f: Fetch
-): Promise<{ body: T | null; statusCode: number }> {
+): Promise<{ body: T | null; statusCode: number; }> {
   const res = await fetch(`${API_URL}${f.endpoint}`, {
     method: f.method,
     headers: {

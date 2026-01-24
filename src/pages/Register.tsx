@@ -50,6 +50,7 @@ export function Register() {
                 <div>
                     <form className={`flex flex-col justify-center gap-1.5 p-5 border-2 border-[var(--border)] w-80 h-117`} onSubmit={handleSubmit}>
                         <FormInput
+                            value={name}
                             identifier="name"
                             label="Nome Completo"
                             type="text"
@@ -58,6 +59,7 @@ export function Register() {
                         />
 
                         <FormInput
+                        value={email}
                             identifier="email"
                             label="Email"
                             type="email"
@@ -66,6 +68,7 @@ export function Register() {
                         />
 
                         <FormInput
+                        value={password}
                             identifier="password"
                             label="Senha"
                             type="password"
@@ -74,6 +77,7 @@ export function Register() {
                         />
 
                         <FormInput
+                        value={confirmPassword}
                             identifier="confirmPassword"
                             label="Confirmar Senha"
                             type="password"

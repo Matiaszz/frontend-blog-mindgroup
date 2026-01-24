@@ -4,8 +4,9 @@ type ButtonProps = {
   onClickAction: () => void;
   invertColors?: boolean;
   className?: string;
-  ignoreCSS?: boolean
-  type?: 'button' | 'submit'
+  ignoreCSS?: boolean;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
 };
 
 export function Button({
@@ -14,7 +15,8 @@ export function Button({
   type = 'submit',
   invertColors = false,
   className = '',
-  ignoreCSS = false
+  ignoreCSS = false,
+  disabled = false
   
 }: ButtonProps) {
   const baseClasses =
@@ -28,6 +30,7 @@ export function Button({
 
   return (
     <button
+      disabled={disabled}
       type={type}
       onClick={onClickAction}
       className={`${!ignoreCSS ? `${baseClasses} ${invertColors ? invertedClasses : normalClasses}` : className}`}

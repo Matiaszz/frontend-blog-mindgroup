@@ -5,8 +5,8 @@ import type React from "react";
 import { FormInput } from "../components/FormInput";
 import { useEffect, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
-import { NavLink } from "../components/ui/NavLink";
 import { Button } from "../components/Button";
+import { updateUser } from "../services/userService";
 
 const defaultValues = {
     profilePictureUrl: '',
@@ -19,6 +19,7 @@ export function Settings() {
   const [updateForm, setUpdateForm] = useState(defaultValues);
   const { classes } = useTheme();
   const { user, loading } = useUser();
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -32,8 +33,33 @@ export function Settings() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.warn('updated');
+    const user = await updateUser(updateForm);
+    console.warn(user);
+    if (user.errors) {
+      alert(user.errors);
+      return;
+    };
+    
+    alert('Alterações salvas');
   }
+
+  function isValidUrl(url: string){
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false
+    }
+  }
+
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailValid = emailRegex.test(updateForm.email);
+    const urlValid = isValidUrl(updateForm.profilePictureUrl);
+
+    setDisabled(!(emailValid && urlValid)); 
+  }, [updateForm.email, updateForm.profilePictureUrl]);
+  
 
   return (
     <div className={`flex flex-col min-w-screen max-w-screen ${classes.textClass} p-20 gap-10`}>
@@ -111,7 +137,7 @@ export function Settings() {
           </div>
           
 
-          <Button onClickAction={() => {}}>Salvar alterações</Button>
+          <Button className="disabled:bg-cyan-900 disabled:cursor-not-allowed" disabled={disabled} onClickAction={() => {}}>Salvar alterações</Button>
         </form>
       </div>
     </div>

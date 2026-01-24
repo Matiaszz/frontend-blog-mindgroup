@@ -46,6 +46,7 @@ export function Login() {
                 <div>
                     <form className={`flex flex-col justify-center gap-1.5 p-5 border-2 border-[var(--border)] w-80 h-fit`} onSubmit={handleSubmit}>
                         <FormInput
+                            value={email}
                             identifier="email"
                             label="Email"
                             type="email"
@@ -53,6 +54,7 @@ export function Login() {
                             onChangeAction={(e) => setEmail(e)}
                         />
                         <FormInput
+                        value={password}
                             identifier="password"
                             label="Senha"
                             type="password"
