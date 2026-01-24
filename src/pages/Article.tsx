@@ -106,7 +106,7 @@ export function Article(){
                     </div>
                 </div>
                 
-                <div className="">
+                <div>
                     <div className="flex gap-5 pb-4">
                         <MetaInfo className={`
                             hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition

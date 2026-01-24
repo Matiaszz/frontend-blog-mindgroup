@@ -55,7 +55,7 @@ export function Articles() {
                     identifier="search"
                     label=""
                     type="text"
-                    placeholder={`Buscar artigos...`}  onChangeAction={(e) => setSearch(e.target.value)}/>
+                    placeholder={`Buscar artigos...`}  onChangeAction={(e) => setSearch(e)}/>
                 </div>
                 <div className="flex justify-between items-center gap-6">
                     <select 

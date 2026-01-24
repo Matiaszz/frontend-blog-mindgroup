@@ -15,10 +15,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
             flex items-center justify-center
             bg-black/40
             animate-fade-in
-            
         `}
-        
-        onClick={onClose}
         >
         <div
             className="

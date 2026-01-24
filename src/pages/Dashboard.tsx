@@ -3,13 +3,22 @@ import { useUser } from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp } from "lucide-react";
-import type { Article } from "../@types/dtos";
+import type { Article, CreatePostDTO } from "../@types/dtos";
 import { deleteArticleById, getMyArticles } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
 import { Modal } from "../components/Modal";
 import { useTheme } from "../hooks/useTheme";
+import { FormInput } from "../components/ui/FormInput";
 
+type CreatePostForm = {
+  title: string;
+  summary: string;
+  categoryId: number | null;
+  coverImage: File | null;
+  tags: string[];
+  content: string;
+};
 
 export function Dashbaord() {
     const navigate = useNavigate();
@@ -17,6 +26,15 @@ export function Dashbaord() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [modalVisible, setModalVisible] = useState<null | 'create' | 'delete' | 'edit'>(null);
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+    const [createForm, setCreateForm] = useState<CreatePostForm>({
+        title: '',
+        summary: '',
+        categoryId: null,
+        coverImage: null,
+        tags: [],
+        content: ''
+    });
+
     const {classes} = useTheme();
     
     useEffect(() => {
@@ -76,6 +94,24 @@ export function Dashbaord() {
         }
     }
 
+    async function handleCreate(e: React.FormEvent) {
+        e.preventDefault();
+
+        if (!createForm.categoryId) return;
+
+        const dto: CreatePostDTO = {
+            title: createForm.title,
+            summary: createForm.summary,
+            categoryId: createForm.categoryId,
+            tags: createForm.tags,
+            content: createForm.content
+        };
+
+
+
+
+    }
+
     if (loading) return <h2>Carregando...</h2>
     return (
     <section className="flex flex-col min-h-screen p-20 gap-10 items-center max-w-screen">
@@ -94,7 +130,7 @@ export function Dashbaord() {
                     </span>
                 </Button>
 
-                <Button onClickAction={() => console.log("new article")}>
+                <Button onClickAction={() => setModalVisible('create')}>
                     <span className="flex gap-2 items-center">
                         <Plus />
                         Novo Artigo
@@ -200,7 +236,37 @@ export function Dashbaord() {
             </Modal>
         )}
 
-        
+        {modalVisible === 'create' && (
+            <Modal title={`Criar artigo`} onClose={() => setModalVisible(null)}>
+                <div className={`flex flex-col max-w-full justify-end ${classes.textClass}`}>
+                    <form className="flex flex-col gap-5" onSubmit={handleCreate}>
+                        <div className="flex flex-col">
+                            <FormInput 
+                            required
+                            type="text"
+                            label='Título do artigo'
+                            identifier="title"
+                            placeholder="Título..."
+                            onChangeAction={(e) => setCreateForm({...createForm, title: e})}/>
+
+                        </div>
+
+                        <div className="flex flex-col">
+                             <FormInput 
+                                required
+                                type="textarea"
+                                label='Resumo'
+                                identifier="summary"
+                                placeholder="Resumo..."
+                                onChangeAction={(e) => setCreateForm({...createForm, summary: e})}/>
+
+                        </div>
+                        
+                       
+                    </form>
+                </div>                       
+            </Modal>
+        )}
     </section>
   );
 }

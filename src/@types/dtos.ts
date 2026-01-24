@@ -84,3 +84,11 @@ export type Comment = {
   postId: string;
   user: User;
 }
+
+export type CreatePostDTO = {
+  title: string,
+  summary: string,
+  content: string,
+  tags?: string[],
+  categoryId: number
+}
