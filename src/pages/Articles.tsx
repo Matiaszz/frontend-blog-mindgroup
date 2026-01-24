@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
-import { FormInput } from "../components/ui/FormInput";
+import { FormInput } from "../components/FormInput";
 import { useArticles } from "../hooks/useArticles";
 import { LayoutGrid, LayoutList, SearchIcon } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
@@ -58,7 +58,7 @@ export function Articles() {
                     placeholder={`Buscar artigos...`}  onChangeAction={(e) => setSearch(e)}/>
                 </div>
                 <div className="flex justify-between items-center gap-6">
-                    <select 
+                  <select 
                       name="categories" 
                       id="categories" 
                       onChange={(e) => setSelectedCategory(e.target.value)}

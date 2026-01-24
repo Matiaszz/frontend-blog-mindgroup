@@ -10,10 +10,10 @@ type InputProps = {
     className?: string;
     required?: boolean;
     isTextArea?: boolean;
-
+    readonly?: boolean;
 }
 
-export function FormInput({onChangeAction, type, identifier, placeholder, label, ignoreCSS = false, className = '', required = false}: InputProps){
+export function FormInput({onChangeAction, type, identifier, placeholder, label, readonly = false, ignoreCSS = false, className = '', required = false}: InputProps){
     return (
     <>
         {type !== 'textarea' && (
@@ -21,6 +21,7 @@ export function FormInput({onChangeAction, type, identifier, placeholder, label,
                 <label className="text-[12px]" htmlFor={identifier}>{label} {`${required ? '*' : ''}`}</label>
                 <input
                 required={required}
+                readOnly={readonly}
                 className={`${!ignoreCSS ? 'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]' : ''} ${className}`}
                 onChange={(e) => onChangeAction(e.target.value)}
                 type={type}
@@ -36,6 +37,7 @@ export function FormInput({onChangeAction, type, identifier, placeholder, label,
                 <label className="text-[12px]" htmlFor={identifier}>{label} {`${required ? '*' : ''}`}</label>
                 <textarea
                 required={required}
+                readOnly={readonly}
                 className={`${!ignoreCSS ? 'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]' : ''} ${className}`}
                 onChange={(e) => onChangeAction(e.target.value)}
                 name={identifier}

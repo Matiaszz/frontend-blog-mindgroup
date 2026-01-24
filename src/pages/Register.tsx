@@ -5,7 +5,7 @@ import { register } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
 import { NavLink } from "../components/ui/NavLink";
-import { FormInput } from "../components/ui/FormInput";
+import { FormInput } from "../components/FormInput";
 import { Users } from "lucide-react";
 
 export function Register() {
@@ -54,7 +54,7 @@ export function Register() {
                             label="Nome Completo"
                             type="text"
                             placeholder="John Doe"
-                            onChangeAction={(e) => setName(e.target.value)}
+                            onChangeAction={(e) => setName(e)}
                         />
 
                         <FormInput
@@ -62,7 +62,7 @@ export function Register() {
                             label="Email"
                             type="email"
                             placeholder="exemplo@email.com"
-                            onChangeAction={(e) => setEmail(e.target.value)}
+                            onChangeAction={(e) => setEmail(e)}
                         />
 
                         <FormInput
@@ -70,7 +70,7 @@ export function Register() {
                             label="Senha"
                             type="password"
                             placeholder="*********"
-                            onChangeAction={(e) => setPassword(e.target.value)}
+                            onChangeAction={(e) => setPassword(e)}
                         />
 
                         <FormInput
@@ -78,7 +78,7 @@ export function Register() {
                             label="Confirmar Senha"
                             type="password"
                             placeholder="*********"
-                            onChangeAction={(e) => setConfirmPassword(e.target.value)}
+                            onChangeAction={(e) => setConfirmPassword(e)}
                         />
                         <button  className="bg-[var(--primary)] transition p-2.5 text-[var(--bg)] hover:bg-cyan-800 hover:cursor-pointer mt-3 flex justify-center items-center gap-2"
                          disabled={loading} type="submit"><Users size={16}/>{loading ? 'Carregando...' : ( `Criar conta`)}</button>

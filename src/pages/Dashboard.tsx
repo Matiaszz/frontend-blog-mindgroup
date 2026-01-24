@@ -3,13 +3,14 @@ import { useUser } from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp } from "lucide-react";
-import type { Article, CreatePostDTO } from "../@types/dtos";
-import { deleteArticleById, getMyArticles } from "../services/articleService";
+import type { Article, Category, CreatePostDTO } from "../@types/dtos";
+import { createPost, deleteArticleById, getMyArticles } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
 import { Modal } from "../components/Modal";
 import { useTheme } from "../hooks/useTheme";
-import { FormInput } from "../components/ui/FormInput";
+import { FormInput } from "../components/FormInput";
+import { useCategories } from "../hooks/useCategories";
 
 type CreatePostForm = {
   title: string;
@@ -21,19 +22,23 @@ type CreatePostForm = {
 };
 
 export function Dashbaord() {
-    const navigate = useNavigate();
-    const {user, loading} = useUser();
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [modalVisible, setModalVisible] = useState<null | 'create' | 'delete' | 'edit'>(null);
-    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-    const [createForm, setCreateForm] = useState<CreatePostForm>({
+    const defaultCreateForm = {
         title: '',
         summary: '',
         categoryId: null,
         coverImage: null,
         tags: [],
         content: ''
-    });
+    } as CreatePostForm;
+    const navigate = useNavigate();
+    const {user, loading} = useUser();
+    const [articles, setArticles] = useState<Article[]>([]);
+    const [modalVisible, setModalVisible] = useState<null | 'create' | 'delete' | 'edit'>(null);
+    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+    const categoriesHook = useCategories();
+    
+    const [createForm, setCreateForm] = useState<CreatePostForm>(defaultCreateForm);
+
 
     const {classes} = useTheme();
     
@@ -90,8 +95,8 @@ export function Dashbaord() {
             alert('Artigo deletado.');
             setArticles(articles.filter(a => a.id !== id));
             articles.filter(a => a.id !== id);
-            return;
         }
+        setModalVisible(null);
     }
 
     async function handleCreate(e: React.FormEvent) {
@@ -107,9 +112,21 @@ export function Dashbaord() {
             content: createForm.content
         };
 
+        const res = await createPost(dto, createForm.coverImage);
+        if (res.errors && !res.data){
+            console.error(res.errors);
+            alert(res.errors);
+            return;
+        }
 
+        setArticles([...articles, res.data as Article])
+        alert('success');
+        setModalVisible(null);
+        setCreateForm(defaultCreateForm);
+    }
 
-
+    const disableBtn = () =>{
+        return createForm.content.length < 20 || createForm.summary.length < 10 || createForm.title.length < 3;
     }
 
     if (loading) return <h2>Carregando...</h2>
@@ -246,7 +263,7 @@ export function Dashbaord() {
                             type="text"
                             label='Título do artigo'
                             identifier="title"
-                            placeholder="Título..."
+                            placeholder="Título... (mínimo 3 caracteres)"
                             onChangeAction={(e) => setCreateForm({...createForm, title: e})}/>
 
                         </div>
@@ -257,12 +274,72 @@ export function Dashbaord() {
                                 type="textarea"
                                 label='Resumo'
                                 identifier="summary"
-                                placeholder="Resumo..."
+                                placeholder="Resumo... (mínimo 10 caracteres)"
                                 onChangeAction={(e) => setCreateForm({...createForm, summary: e})}/>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="text-[12px]" htmlFor="category">Categoria *</label>
+                            <select
+                            required
+                            name="category"
+                            value={String(createForm.categoryId)}
+                            onChange={(e) => setCreateForm({...createForm, categoryId: Number.parseInt(e.target.value)})}
+                            >
+                            <option value="">Selecione uma categoria</option>
+
+                            {categoriesHook.categories.map(c => (
+                                <option key={c.id} value={c.id}>
+                                {c.label}
+                                </option>
+                            ))}
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label htmlFor="coverImage">Imagem de Capa *</label>
+                            <input
+                            type="file"
+                            required
+                            className={'border-2 border-[var(--border)] p-2 bg-[var(--secondary)] text-[var(--muted-text)]'}
+                            name="coverImage"
+                            id="coverImage"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0] ?? null;
+                                setCreateForm({...createForm, coverImage: file});
+                            }}
+                            />
 
                         </div>
+
+                        <div className="flex flex-col">
+                            <FormInput 
+                            required
+                            type="textarea"
+                            label='Conteúdo'
+                            identifier="content"
+                            placeholder="Conteúdo...(mínimo 20 caracteres )"
+                            onChangeAction={(e) => setCreateForm({...createForm, content: e})}/>
+                            <div className="flex items-center">
+                                <p className="text-[var(--muted-text)] text-[12px]">{createForm.content.length} Caracteres</p>
+                                <Dot></Dot>
+                                <p className="text-[var(--muted-text)] text-[12px]">{createForm.content.trim().split(' ').length} Palavras</p>
+                                <Dot></Dot>
+                                <p className="text-[var(--muted-text)] text-[12px]">{Math.ceil(createForm.content.length / 200)} minutos de leitura</p>
+                            </div>
+                        </div>
                         
+                        <div className="flex items-center justify-end gap-3">
+                            <button  
+                            className="transition p-2.5 disabled:bg-gray-500 disabled:cursor-not-allowed hover:cursor-pointer bg-[var(--primary)] text-[var(--bg)] hover:bg-cyan-800"
+                            disabled={disableBtn()} type="submit">
+                                {loading ? 'Carregando...' : `Publicar artigo`}
+                            </button>
+                            <Button invertColors onClickAction={() => setModalVisible(null)}>Cancelar</Button>
+                        </div>
                        
+
+                        
                     </form>
                 </div>                       
             </Modal>
@@ -286,7 +363,6 @@ function InfoCard({title, icon, metric}: {title: string, icon: 'file' | 'comment
             <h4 className="text-[var(--muted-text)] text-[18px]">{title}</h4>
             {icons[icon]}
         </div>
-        
         <p className="text-[32px]">{metric}</p>
     </div>
     )

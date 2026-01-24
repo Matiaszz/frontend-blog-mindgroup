@@ -1,5 +1,5 @@
 import type { Article, Category, CreatePostDTO, ServiceResult, User } from "../@types/dtos";
-import { fetchApi } from "./api";
+import { API_URL, fetchApi } from "./api";
 
 export async function getAllArticles(): Promise<ServiceResult<Article[]>> {
   const data = await fetchApi<Article[]>({
@@ -53,7 +53,8 @@ export async function deleteArticleById(id: string) {
   return {data: true, errors: null};
 }
 
-export async function createPost(dto: CreatePostDTO): Promise<ServiceResult<User>> {
+export async function createPost(dto: CreatePostDTO, file: File | null): Promise<ServiceResult<Article>> {
+  if (!file) return { data: null, errors: ['Cover image is required'] };
   const errors: string[] = [];
 
   if (!dto.categoryId) errors.push("Category is required");
@@ -65,8 +66,8 @@ export async function createPost(dto: CreatePostDTO): Promise<ServiceResult<User
     return { data: null, errors };
   }
 
-
-  const response = await fetchApi<null>({
+  console.log(dto);
+  const response = await fetchApi<Article>({
     endpoint: "/post",
     method: "POST",
     body: dto,
@@ -74,6 +75,20 @@ export async function createPost(dto: CreatePostDTO): Promise<ServiceResult<User
 
   if (errors.length > 0) {
     return { data: null, errors };
+  }
+   const formData = new FormData();
+   formData.append("file", file);
+
+  const sendBanner = await fetch(`${API_URL}/post/${response.body?.id}/upload`, {
+    method: "POST",
+    credentials: "include",
+    body: formData, 
+  });
+
+  if (!sendBanner.ok) {
+    const error = await sendBanner.text();
+    await deleteArticleById(response.body!.id);
+    throw new Error(error);
   }
 
   return {

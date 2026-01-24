@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
 import { NavLink } from "../components/ui/NavLink";
-import { FormInput } from "../components/ui/FormInput";
+import { FormInput } from "../components/FormInput";
 import { LogIn } from "lucide-react";
 import { login } from "../services/authService";
 
@@ -50,14 +50,14 @@ export function Login() {
                             label="Email"
                             type="email"
                             placeholder="exemplo@email.com"
-                            onChangeAction={(e) => setEmail(e.target.value)}
+                            onChangeAction={(e) => setEmail(e)}
                         />
                         <FormInput
                             identifier="password"
                             label="Senha"
                             type="password"
                             placeholder="*********"
-                            onChangeAction={(e) => setPassword(e.target.value)}
+                            onChangeAction={(e) => setPassword(e)}
                         />
                         
 
