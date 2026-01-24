@@ -63,6 +63,7 @@ export type Article = {
   postTags: PostTag[];
   likes: Like[];
   favorites: Favorite[];
+  comments: Comment[];
 };
 
 export type Like = {
@@ -75,4 +76,11 @@ export type Favorite = {
   id: number;
   userId: string;
   postId: string
+}
+
+export type Comment = {
+  id: number;
+  content: string;
+  postId: string;
+  user: User;
 }

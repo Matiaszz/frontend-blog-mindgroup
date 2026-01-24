@@ -111,14 +111,14 @@ export function Article(){
                 <div className="">
                     <div className="flex gap-5 pb-4">
                         <MetaInfo className={`
-                                hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
-                                `} content={article.likes.length.toString() + " Curtidas"} type="likes"/>
-                            <MetaInfo className={`
-                                hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
-                                `} content={article.views.toString() + " Vizualizações"} type="views"/>
-                            <MetaInfo className={`
-                                hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
-                                `} content={`X comentários`} type="comment"/>
+                            hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
+                            `} content={article.likes.length.toString() + " Curtidas"} type="likes"/>
+                        <MetaInfo className={`
+                            hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
+                            `} content={article.views.toString() + " Vizualizações"} type="views"/>
+                        <MetaInfo className={`
+                            hover:cursor-pointer hover:fill-red-600 hover:outline-0 hover:text-red-600 transition
+                            `} content={`${article.comments.length} Comentários`} type="comment"/>
                     </div>
                     <div className="flex flex-col gap-15 border-b border-b-[var(--border)] p-5">
                         <div className="flex items-center justify-center">
@@ -144,7 +144,7 @@ export function Article(){
                 </div>
 
                 <div className="flex flex-col gap-5">
-                    <h3>Comentário (X)</h3>
+                    <h3>Comentário ({article.comments.length})</h3>
                     <div className="flex flex-col gap-4">
                         {!user && !loading && (<LoginCommentPlaceholder/>)}
                         {user && !loading && (
@@ -156,7 +156,6 @@ export function Article(){
                                 </textarea>
                                 <Button onClickAction={() => console.log('consolado')}>Publicar Comentário</Button>
                             </>
-                            
                         )}
                     </div>
                     
@@ -169,7 +168,6 @@ export function Article(){
 
 function LoginCommentPlaceholder(){
     const navigate = useNavigate();
-
 
     return (
         <div className="border border-[var(--border)] min-w-full min-h-37 flex flex-col justify-center items-center">
