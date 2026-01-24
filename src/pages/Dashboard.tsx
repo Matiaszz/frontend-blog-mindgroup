@@ -71,8 +71,8 @@ export function Dashbaord() {
 
     if (loading) return <h2>Carregando...</h2>
     return (
-    <section className="flex flex-col min-h-screen p-20 gap-10 items-center">
-        <div className="w-full max-w-[1200px] flex flex-col gap-10">
+    <section className="flex flex-col min-h-screen p-20 gap-10 items-center max-w-screen">
+        <div className="w-full max-w-[1200px] flex justify-between flex-wrap gap-10 ">
             <div>
                 <h2 className="text-[36px]">Dashboard</h2>
                 <p className="text-[var(--muted-text)]">
@@ -97,7 +97,7 @@ export function Dashbaord() {
             </div>
         </div>
 
-        <div className="flex gap-5">
+        <div className="flex gap-5 max-w-screen flex-wrap">
             <InfoCard title="Total de Artigos" icon='file' metric={articles.length} />
             <InfoCard title="Engajamento" icon='comment' metric={getTotalComments()} />
             <InfoCard title="Curtidas" icon='like' metric={getTotalLikes()} />
@@ -125,7 +125,7 @@ export function Dashbaord() {
                         <h3>{article.title}</h3>
                         <p>{article.summary.length > 60 ? `${article.summary.substring(0, 60)}...` : article.summary}</p>
 
-                        <div className="flex items-center gap-3 text-sm mt-2">
+                        <div className="flex items-center gap-3 text-sm mt-2 ">
                             <p>{compactDateFormat(article.createdAt)}</p>
                             <Dot />
                             <MessageSquare />
