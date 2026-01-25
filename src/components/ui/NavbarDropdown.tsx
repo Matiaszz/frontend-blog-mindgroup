@@ -3,6 +3,7 @@ import { useUser } from "../../hooks/useUser";
 import { NavLink } from "./NavLink";
 import { logout } from "../../services/authService";
 import { useTheme } from "../../hooks/useTheme";
+import { useNavigate } from "react-router-dom";
 
 type DropdownProps = {
     show: boolean;
@@ -11,8 +12,14 @@ type DropdownProps = {
 
 export function NavbarDropdown({ show, size }: DropdownProps) {
   const { user, loading } = useUser();
+  const navigate = useNavigate();
   const {classes} = useTheme();
   if (!show || !user || loading) return null;
+
+  async function handleLogout(){
+    await logout();
+    navigate('/login');
+  }
 
   return (
     <div
@@ -47,7 +54,7 @@ export function NavbarDropdown({ show, size }: DropdownProps) {
       </div>
 
       <div className="mt-4">
-        <button onClick={logout} className="flex items-center gap-2 text-red-600 transition hover:text-red-800 hover:cursor-pointer">
+        <button onClick={(handleLogout)} className="flex items-center gap-2 text-red-600 transition hover:text-red-800 hover:cursor-pointer">
           <LogOut /> Sair
         </button>
       </div>

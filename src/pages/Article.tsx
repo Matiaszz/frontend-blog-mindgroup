@@ -40,7 +40,9 @@ export function Article(){
                 setComments(res.data!.comments);
                 setLikes(res.data!.likes);
                 setFavorites(res.data!.favorites);
-                setUserLiked(res.data!.likes.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
+
+                setUserFavorited(res.data!.favorites.some(l => l.postId === res.data!.id && l.userId === user?.id));
+                setUserLiked(res.data!.likes.some(l => l.postId === res.data!.id && l.userId === user?.id));
 
                 const newCommentLikes: Record<number, CommentLike[]> = {};
                 const newUserCommentLikes: Record<number, boolean> = {};
@@ -52,8 +54,6 @@ export function Article(){
                 setCommentLikes(newCommentLikes);
                 setUserCommentLikes(newUserCommentLikes);
                 
-
-                setUserFavorited(res.data!.favorites.map(l => l.postId === res.data!.id && l.userId === user?.id).length > 0);
             } catch(e){
                 console.error("Error on fetch Article: ", e);
             }

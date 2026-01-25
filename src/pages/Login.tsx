@@ -67,7 +67,7 @@ export function Login() {
                          disabled={loading} type="submit"><LogIn size={16}/>{loading ? 'Carregando...' : `Entrar`}</button>
                         <div className="h-[1px] min-w-[80%] bg-[var(--muted)] mt-3"></div>
                         <div className="flex justify-center text-[16px]">
-                            <p className="list-none flex gap-1 text-center"><span className="text-[var(--muted-text)]">Ainda não tem uma conta?</span> <NavLink to='/register'>Criar conta</NavLink></p>
+                            <p className="list-none flex gap-1 text-center"><span className="text-[var(--muted-text)]">Ainda não tem uma conta?</span> <NavLink to='/registro'>Criar conta</NavLink></p>
                         </div>
                     </form>
                 </div>
