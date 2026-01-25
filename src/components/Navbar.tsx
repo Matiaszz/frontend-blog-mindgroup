@@ -34,7 +34,7 @@ export function Navbar({showAuthLinks = true}: NavbarProps){
                 {showAuthLinks && !loading && !user && (
                     <>
                         <NavLink to="/login">Entrar</NavLink>
-                        <Button onClickAction={() => {navigate('/register')}}>Cadastrar</Button>
+                        <Button onClickAction={() => {navigate('/registro')}}>Cadastrar</Button>
                     </>
                 )}
 

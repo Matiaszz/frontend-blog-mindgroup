@@ -27,6 +27,7 @@
   --secondary: #14181F;
   --border: #272C35;
   --muted-text: #9DA6AF;
+  --hover-item-color: #14181F;
 
 }
 
@@ -38,4 +39,5 @@
   --secondary: #14181F;
   --border: #272C35;
   --muted-text: #9DA6AF;
+  --hover-item-color: #14181F;
 }

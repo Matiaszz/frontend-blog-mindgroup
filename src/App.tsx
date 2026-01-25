@@ -23,7 +23,7 @@ function App() {
         </Route>
         <Route element={<NoAuthLinksLayout/>}>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register/>}/>
+          <Route path="/registro" element={<Register/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

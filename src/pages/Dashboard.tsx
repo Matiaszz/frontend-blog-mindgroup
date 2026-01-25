@@ -184,7 +184,7 @@ export function Dashbaord() {
                 </p>
             </div>
             <div className="flex gap-3">
-                <Button invertColors onClickAction={() => console.log("Config")}>
+                <Button invertColors onClickAction={() => navigate('/configuracoes')}>
                     <span className="flex gap-2 items-center ">
                         <Settings />
                         Configurações

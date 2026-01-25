@@ -2,12 +2,11 @@ import { Bookmark, Clock, Eye, Heart, MessageSquare, Share, Share2 } from "lucid
 import type { Article } from "../@types/dtos";
 import { ArticleImage } from "./ArticleImage";
 import { Link } from "react-router-dom";
+import { extenseDateFormat } from "../utils/utils";
 
 
 export function ListArticleCard({a}: {a: Article}){
-    const extenseDateFormat = (date: string) => {
-      return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(date));
-    }
+
     return (
         <Link to={`/artigo/${a.id}`} key={a.id} 
             className="
