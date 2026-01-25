@@ -92,6 +92,10 @@ export function Article(){
             };
 
             setComments(prev => [newComment, ...prev]);
+            setCommentLikes(prev => ({
+                ...prev,
+                [newComment.id]: []
+            }));
             setComment('');
         }
         setComment('');
