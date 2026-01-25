@@ -7,12 +7,14 @@ import { LayoutGrid, LayoutList, SearchIcon } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { ListArticleCard } from "../components/ListArticleCard";
 import { useCategories } from "../hooks/useCategories";
+import { GridArticleCard } from "../components/GridArticleCard";
+
 
 export function Articles() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [view, setView] = useState<'grid' | 'column'>('column');
+    const [view, setView] = useState<'grid' | 'column'>('grid');
     const {user, loading} = useUser();
     const articlesHook = useArticles();
     const categoriesHook = useCategories();
@@ -83,10 +85,14 @@ export function Articles() {
                 </div>
             </div>
 
-            <div className={`flex flex-col gap-5`}>
-              {!articlesHook.loading && !loading && filteredArticles.map((a) => (
+            <div className={`flex ${view === 'column' ? 'flex-col' : ''} gap-5`}>
+              {!articlesHook.loading && !loading && view === 'column' && filteredArticles.map((a) => (
                <ListArticleCard a={a}/>
               ))}
+
+              {!articlesHook.loading && !loading && view === 'grid' && filteredArticles.map((a) => (
+                <GridArticleCard article={a} />
+              )) }
             </div>
 
         </section>

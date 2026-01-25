@@ -45,17 +45,18 @@ export function Dashbaord() {
     const {classes} = useTheme();
     
     useEffect(() => {
+        if (loading) return;
+        if (!user){
+            navigate('/login');
+            return;
+        }
         async function setup(){
-            if (!loading && !user){
-                navigate('/login');
-                return;
-            }
             const myArticles = await getMyArticles();
             setArticles(myArticles.data ?? []);
         }
         setup();      
 
-    }, [loading]);
+    }, [user, loading]);
 
     function getTotalComments(): number{
         let s = 0;
@@ -138,6 +139,7 @@ export function Dashbaord() {
             tags: editForm.tags,
             content: editForm.content
         };
+        console.warn(dto);
 
         const res = await updateArticleById(article.id, dto, editForm.coverImage);
         if (res.errors && !res.data){
@@ -165,7 +167,6 @@ export function Dashbaord() {
             content: article.content
         });
         setModalVisible('edit');
-        console.warn(createForm);
     }
 
 
@@ -217,13 +218,13 @@ export function Dashbaord() {
 
                 <div className="flex flex-col gap-5 border flex-wrap border-[var(--border)] p-5">
                     {articles.map(article => (
-                    <Link to={`/artigo/${article.id}`}
+                    <div 
                         key={article.id}
                         className="flex justify-between flex-wrap items-center border-b border-b-[var(--border)] pb-3 hover:border-[var(--primary)] transition"
                     >
-                        <div className="w-[120px]">
+                        <Link to={`/artigo/${article.id}`} className="w-[120px]">
                             <ArticleImage title={article.title} postId={article.id} />
-                        </div>
+                        </Link>
 
                         <div className="flex-1 px-5">
                         <h3>{article.title}</h3>
@@ -256,7 +257,7 @@ export function Dashbaord() {
                             </span>
                         </Button>
                         </div>
-                    </Link>
+                    </div>
                     ))}
                 </div>
             </div>
