@@ -121,3 +121,11 @@ export type CreatePostDTO = {
   tags?: string[],
   categoryId: number
 }
+
+export type LogResponseDTO = {
+  id: number;
+  action: string;
+  user: Author;
+  post: Article;
+  createdAt: Date;
+};

@@ -92,9 +92,8 @@ export function Articles() {
 
               {!articlesHook.loading && !loading && view === 'grid' && filteredArticles.map((a) => (
                 <GridArticleCard article={a} />
-              )) }
+              ))}
             </div>
-
         </section>
     );
 }

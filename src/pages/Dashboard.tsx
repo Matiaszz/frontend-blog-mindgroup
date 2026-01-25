@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Trash, TrendingUp, X } from "lucide-react";
-import type { Article, Category, CreatePostDTO } from "../@types/dtos";
+import { Dot, Edit, File, FileText, Heart, Icon, MessageSquare, Plus, Settings, Text, Trash, TrendingUp, X } from "lucide-react";
+import type { Article, Category, CreatePostDTO, LogResponseDTO } from "../@types/dtos";
 import { createPost, deleteArticleById, getMyArticles, updateArticleById } from "../services/articleService";
 import { ArticleImage } from "../components/ArticleImage";
 import { compactDateFormat } from "./Article";
@@ -11,6 +11,7 @@ import { Modal } from "../components/Modal";
 import { useTheme } from "../hooks/useTheme";
 import { FormInput } from "../components/FormInput";
 import { useCategories } from "../hooks/useCategories";
+import { getLatestActivites } from "../services/logService";
 
 type CreatePostForm = {
   title: string;
@@ -37,7 +38,7 @@ export function Dashbaord() {
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const categoriesHook = useCategories();
     const [currentTag, setCurrentTag] = useState('');
-    
+    const [latestActivities, setLatestActivities] = useState<LogResponseDTO[]>([]);
     const [createForm, setCreateForm] = useState<CreatePostForm>(defaultCreateForm);
     const [editForm, setEditForm] = useState<CreatePostForm>(defaultCreateForm);
 
@@ -53,8 +54,12 @@ export function Dashbaord() {
         async function setup(){
             const myArticles = await getMyArticles();
             setArticles(myArticles.data ?? []);
+
+            const logs = await getLatestActivites();
+            console.log(logs.data);
+            setLatestActivities(logs.data?.body ?? []);
         }
-        setup();      
+        setup();     
 
     }, [user, loading]);
 
@@ -169,6 +174,25 @@ export function Dashbaord() {
         setModalVisible('edit');
     }
 
+    function getTimeAgo(date: Date){
+        const diffMs = Date.now() - new Date(date).getTime();
+        const diffMinutes = Math.floor(diffMs / 60000);
+        let timeAgo = '';
+
+        if (diffMinutes < 1) {
+            timeAgo = 'agora mesmo';
+
+        } else if (diffMinutes < 60) {
+            timeAgo = `${diffMinutes} minutos atrás`;
+
+        } else {
+            const hours = Math.floor(diffMinutes / 60);
+            timeAgo = `${hours} horas atrás`;
+        }
+
+        return timeAgo;
+    }
+
 
     const disableBtn = (form: CreatePostForm) =>{
         return form.content.length < 20 || form.summary.length < 10 || form.title.length < 3;
@@ -267,6 +291,22 @@ export function Dashbaord() {
                     <h4>Atividades recentes</h4>
                 </div>
                 <div>
+                    {!loading && latestActivities.map(log => (
+                        <div className="flex  items-center justify-center">
+                            <div>
+                                <img className="w-20 h-20" src={log.user.profilePictureUrl} alt="profile picture url" />
+                                <div className="flex">
+                                    <p><span className="font-semibold">{log.user.name}</span> {log.action} <span className="font-semibold">{log.post.title}</span></p>
+                                </div>
+                                <div className="flex">
+                                    <span className="flex items-center gap-1.5 justify-center text-[var(--muted-text)]">
+                                        <MessageSquare size={16}/>
+                                        <p> {getTimeAgo(log.createdAt)}</p>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                     
                 </div>
             </div>
